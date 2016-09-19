@@ -5,6 +5,57 @@ angular.module('app.controllers', [])
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
 function ($scope, $stateParams) {
 
+	$scope.total = "1,50,000";
+
+  $scope.options = {  
+  chart: {
+    type: 'pieChart',
+    height: 210,
+    x: function(d){return d.key;},
+    y: function(d){return d.y;},
+    showLabels: true,
+    duration: 500,
+    labelThreshold: 0.01,
+    labelSunbeamLayout: true,
+    width: 250,
+    title: $scope.total,
+    donut: true,
+    tooltips: true,
+    legendPosition: 'top',
+    showLegend: false
+  }
+};
+
+  $scope.data = [  
+  {
+    key: "Barclays",
+    y: 500
+  },
+  {
+    key: "HSBC",
+    y: 200
+  },
+  {
+    key: "ICICI",
+    y: 900
+  },
+  {
+    key: "AXIS",
+    y: 700
+  },
+  {
+    key: "RBS",
+    y: 400
+  },
+  {
+    key: "Tesco",
+    y: 300
+  },
+  {
+    key: "Halifax",
+    y: 50
+  }
+];
 
 }])
    
