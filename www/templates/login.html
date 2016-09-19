@@ -1,0 +1,21 @@
+<ion-view style="" id="page4" title="Login">
+    <ion-content class="has-header" padding="true">
+        <div style="width: 283px; height: 82px;" class="spacer"></div>
+        <form class="list" id="login-form1">
+            <ion-list id="login-list1">
+                <label id="login-input1" class="item item-input item-floating-label">
+                    <span class="input-label">Username</span>
+                    <input placeholder="User Name" type="text">
+                </label>
+                <label id="login-input2" class="item item-input item-floating-label">
+                    <span class="input-label">Password</span>
+                    <input placeholder="Password" type="password">
+                </label>
+            </ion-list>
+            <div style="width: 283px; height: 22px;" class="spacer"></div>
+            <a class="button button-positive  button-block icon ion-log-in" id="login-button1" ui-sref="menu.tiles">Get Me In</a>
+            <a class="button button-positive  button-block button-clear icon-left ion-social-facebook" id="login-button2" onclick="window.open('/signup', '_system', 'location=yes'); return false;" href="#">Login Using Facebook</a>
+            <a class="button button-positive  button-block button-clear icon-left ion-document" id="login-button4" ui-sref="menu.signup">Register Me</a>
+        </form>
+    </ion-content>
+</ion-view>
