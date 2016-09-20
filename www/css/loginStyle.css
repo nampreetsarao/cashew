@@ -1,6 +1,6 @@
 
 .cashewLogo{
-	background-image: url("img/cashew.png");
+	background-image: url("/img/cashew.png");
     background-size: 270px;
     background-repeat: no-repeat;
     background-position: center;
@@ -9,7 +9,7 @@
     margin-top: 20%;
 }
 .bg_login{
-	background-image: url("img/3dBox.jpg");
+	background-image: url("/img/3dBox.jpg");
 	background-repeat: no-repeat;    
 }
 .form-4 {
