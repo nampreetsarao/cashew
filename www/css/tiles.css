@@ -91,16 +91,20 @@
   position: absolute;
   overflow: hidden;
   top: 0;
+<<<<<<< HEAD
   left: 0; 
   cursor: pointer;
+=======
+  left: 0;
+>>>>>>> bbee54f9fbfc1b35110be2086d1b9ff84f0b7d80
 }
 
 .hovereffect img {
 	margin: auto;
   display: block;
   position: relative;
-  -webkit-transition: all 0.4s ease-in;
-  transition: all 0.4s ease-in;
+  -webkit-transition: all 0.2s ease-in;
+  transition: all 0.2s ease-in;
 }
 
 .hovereffect:hover img {
@@ -138,8 +142,8 @@
   -webkit-transform: scale(0.7);
   -ms-transform: scale(0.7);
   transform: scale(0.7);
-  -webkit-transition: all 0.1s ease-in;
-  transition: all 0.1s ease-in;
+  -webkit-transition: all 0.4s ease-in;
+  transition: all 0.4s ease-in;
   opacity: 0;
   filter: alpha(opacity=0);
   color: #fff;
