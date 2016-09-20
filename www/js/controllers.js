@@ -1,14 +1,29 @@
 angular.module('app.controllers', [])
   
-.controller('tilesCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+.controller('tilesCtrl', ['$scope', '$stateParams', '$state', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams) {
+function ($scope, $stateParams, $state) {
 
 	$scope.total = "1,50,000";
 
   $scope.options = {  
   chart: {
+  	pie: {
+      dispatch: {
+          elementClick: function(e) { 
+          	var account = e.data.key;
+          	console.log("details");
+          	$state.go("accountDetails");
+          	e.event.stopPropagation();
+          },
+          chartClick: function(e) {
+
+          	console.log("DASHBOARD");
+          	$state.go("account");
+          }
+      }
+    },
     type: 'pieChart',
     height: 210,
     x: function(d){return d.key;},
@@ -56,6 +71,8 @@ function ($scope, $stateParams) {
     y: 50
   }
 ];
+
+	
 
 }])
    

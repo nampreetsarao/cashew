@@ -3,3 +3,9 @@
 .scroll{
 	height: 100%;
 }
+.bigDetails{
+	color: white;
+    width: 30%;
+    margin: auto;
+    text-align: center;
+}
