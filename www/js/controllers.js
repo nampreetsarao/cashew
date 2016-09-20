@@ -83,13 +83,72 @@ function ($scope, $stateParams) {
 
 }])
    
-.controller('loginCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
-// You can include any angular dependencies as parameters for this function
-// TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams) {
+// .controller('loginCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+// // You can include any angular dependencies as parameters for this function
+// // TIP: Access Route Parameters for your page via $stateParams.parameterName
+// function ($scope, $stateParams) {
+// }])
 
+//, subscribeService
+//OAuth implementation
+.controller('loginCtrl', function($scope, OAuthService,$http, $state,$interval, $cordovaInAppBrowser,StorageServiceForToken, $ionicPopup) {
+    
+    $scope.loginOAuth =  function(){
+    var ref = cordova.InAppBrowser.open('http://inmbz2239.in.dst.ibm.com:8084/bigoauth2server/oauth/authorize?client_id=4a4b0281-49b1-4533-b3ac-eee11f1f6bd8&redirect_uri=http://localhost/callback&scope=read&response_type=code', '_blank', 'location=no,clearsessioncache=yes,clearcache=yes,toolbar=yes');
+    ref.addEventListener('loadstart', function(event) {
+    if ((event.url).startsWith("http://localhost/callback")) {
+          $scope.requestToken = (event.url).split("code=")[1];
+          $scope.oAuth=[];
+          //alert("requestToken.."+$scope.requestToken);
+          //alert("Calling nexxt service for token");
+         //Fetch general Information details from the API
+         OAuthService.general(
+             {
+               grant_type: 'authorization_code',
+               redirect_uri: 'http://localhost/callback',
+               state: '4281938',
+               code:  $scope.requestToken
+            },
+            {
 
-}])
+            },
+            function(message) {
+               $scope.oauthData=message;
+               ref.close();
+               alert("done.."+$scope.oauthData);
+               //Persisting the token data in local storage
+               StorageServiceForToken.remove($scope.oauthData);
+               StorageServiceForToken.add($scope.oauthData) ;
+              alert('before calling subscription service '); 
+               //check subscription
+               var subscriptionDetails = {};
+               // var promise = subscribeService.getSubscriptionInfo();
+               //  promise.then(function(resp) {
+               //      subscriptionDetails = resp.data;
+               //      //alert('subscriptionDetails: '+subscriptionDetails.length);
+               //      if(subscriptionDetails.length && subscriptionDetails.length>0){
+               //          var accountID = subscriptionDetails[0].accountId;
+               //          localStorage.setItem("accountID", accountID);
+               //          //alert('GetAccountId: '+localStorage.getItem("accountID"));
+               //          //$state.go('menu.aboutPSD22');
+               //      }else{
+               //          $state.go('menu.subscription');
+               //      }
+               //  });               
+            },function(message) {
+        $scope.signupResponse=message;
+      });
+       };
+     });
+
+    if (typeof String.prototype.startsWith != 'function') {
+        String.prototype.startsWith = function (str){
+            return this.indexOf(str) == 0;
+        };
+    }
+   };
+ })
+
    
 .controller('signupCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
