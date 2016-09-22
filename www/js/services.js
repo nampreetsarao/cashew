@@ -132,6 +132,101 @@ angular.module('app.services', ['app-constants'])
     };
 })
 
+//Account and account details Service
+.service('accountTransactionAPI', function($http, $q){
+  //specific account details chart
+  this.accountTransactionDistribution = function(){
+    return $q(function(resolve, reject){
+      var req = {
+          url: 'http://inmbz2239.in.dst.ibm.com:8085/cashewapi/user/tanmay.ambre@in.ibm.com/transactions/distribution',
+            method:'GET',
+            headers : {
+               'Accept' : 'application/json',
+               'Content-Type':'application/json', 
+               'Authorization' : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoidGFubWF5LmFtYnJlQGluLmlibS5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDUyMzc3OSwidXNlck5hbWUiOiJ0YW5tYXkuYW1icmVAaW4uaWJtLmNvbSIsInVzZXJJZCI6InRhbm1heS5hbWJyZUBpbi5pYm0uY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjdlZGY4MTgzLTM5YzItNDcyNy1iMjE2LTgyOWM4M2EwNDUwYSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.N6JvdosxmswXhg7RuFRFHRfQVIdn4fGpNveDc1cghtQ',
+               'fromDate' : '2016-01-01T00:00:00.000+0530', 
+               'toDate' : '2016-11-01T00:00:00.000+0530'
+            },
+              params: {                    
+                  projectId: '6111',
+                  bankId: 'IBMGB'
+                }
+          }
+          $http(req)
+          .then(function(accountTransactionDistributionData) {
+            console.log(accountTransactionDistributionData);            
+            // function to retrive the response
+            if (accountTransactionDistributionData.status == 200) {
+              resolve(accountTransactionDistributionData.data.response);
+            } else {
+              reject('Update Expertise Failed!');
+            }
+          },
+          function(err) {
+            reject(err);
+          });
+    });
+  }
+
+  //specific account transaction data
+  this.accountTransactions = function(){
+    return $q(function(resolve, reject){
+      var req = {
+          url: 'http://inmbz2239.in.dst.ibm.com:8085/cashewapi/tanmay.ambre@in.ibm.com/IBMGB/6111/transactions',
+            method:'GET',
+            headers : {
+               'Accept' : 'application/json',
+               'Content-Type':'application/json', 
+               'Authorization' : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoidGFubWF5LmFtYnJlQGluLmlibS5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDUyMzc3OSwidXNlck5hbWUiOiJ0YW5tYXkuYW1icmVAaW4uaWJtLmNvbSIsInVzZXJJZCI6InRhbm1heS5hbWJyZUBpbi5pYm0uY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjdlZGY4MTgzLTM5YzItNDcyNy1iMjE2LTgyOWM4M2EwNDUwYSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.N6JvdosxmswXhg7RuFRFHRfQVIdn4fGpNveDc1cghtQ'
+            }
+          }
+          $http(req)
+          .then(function(accountTransactionsData) {
+            console.log(accountTransactionsData);            
+            // function to retrive the response
+            if (accountTransactionsData.status == 200) {
+              resolve(accountTransactionsData.data.response);
+            } else {
+              reject('Update Expertise Failed!');
+            }
+          },
+          function(err) {
+            reject(err);
+          });
+    });
+  }
+
+  //consolidated account details chart
+  this.allAccountTransactionDistribution = function(){
+    return $q(function(resolve, reject){
+      var req = {
+          url: 'http://inmbz2239.in.dst.ibm.com:8085/cashewapi/user/tanmay.ambre@in.ibm.com/transactions/distribution',
+            method:'GET',
+            headers : {
+               'Accept' : 'application/json',
+               'Content-Type':'application/json', 
+               'Authorization' : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoidGFubWF5LmFtYnJlQGluLmlibS5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDUzMzM3OCwidXNlck5hbWUiOiJ0YW5tYXkuYW1icmVAaW4uaWJtLmNvbSIsInVzZXJJZCI6InRhbm1heS5hbWJyZUBpbi5pYm0uY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6Ijc3ZTU3ZmQ2LTQyOTktNGYwOC04ZmU5LTg3MDQxZGViZjM5YSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.7fcwsJ0xyjfqJ6vQBRZ-MfrWU7oEV5a9qQikkWdrLmw',
+               'fromDate' : '2016-01-01T00:00:00.000+0530', 
+               'toDate' : '2016-11-01T00:00:00.000+0530'
+            }
+          }
+          $http(req)
+          .then(function(allAccountTransactionDistributionData) {
+            console.log(allAccountTransactionDistributionData);            
+            // function to retrive the response
+            if (allAccountTransactionDistributionData.status == 200) {
+              resolve(allAccountTransactionDistributionData.data.response);
+            } else {
+              reject('Update Expertise Failed!');
+            }
+          },
+          function(err) {
+            reject(err);
+          });
+    });
+  }
+})
+
 // //Factory for Voucher services
 // .factory('VoucherService', function($resource, constantService){
 //     var data = $resource('http://'+constantService.server+':'+constantService.port+constantService.baseURL+constantService.baseURLForOAuth+'/vocher' , {}, {
