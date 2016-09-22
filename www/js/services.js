@@ -2,15 +2,22 @@ angular.module('app-constants', [])
 .constant('apiUrl', '@@apiUrl')
 .constant("server", "inmbz2239.in.dst.ibm.com")
 .constant("port", "8085")
-.constant("baseURL","/cashewapi/")
+.constant("portForSignup", "8084")
+.constant("baseURL","/cashewapi")
+.constant("baseURLForOAuth","/bigoauth2server")
 
-.factory('constantService', function ($http, server, port, baseURL) {
+.factory('constantService', function ($http, server, port, baseURL, baseURLForOAuth, portForSignup) {
     return {
         server:server,
         port: port,
-        baseURL: baseURL
+        baseURL: baseURL, 
+        baseURLForOAuth: baseURLForOAuth, 
+        portForSignup: portForSignup
     }
 });
+
+
+
 
 angular.module('app.services', ['app-constants'])
 
@@ -48,10 +55,115 @@ angular.module('app.services', ['app-constants'])
     };
 })
 
-//OAuth Service
-.factory('OAuthService', function($resource,apiUrl){
+
+//Create Voucher service 
+.service('voucherService', function($state,$http,$q,$ionicLoading,constantService,StorageServiceForToken,$ionicPopup) {
+    var deferred = $q.defer();
+    //service to generate the voucher
+    this.createVoucher = function(voucherObj) {
+      $ionicLoading.show(); 
+      var voucherDetails='';
+      var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoidGFubWF5LmFtYnJlQGluLmlibS5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDQ3ODEyNSwidXNlck5hbWUiOiJ0YW5tYXkuYW1icmVAaW4uaWJtLmNvbSIsInVzZXJJZCI6InRhbm1heS5hbWJyZUBpbi5pYm0uY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjI0MzAzNWZlLWViMjEtNGU0Ni1hZDUyLTVmMDExMThmNjJkYiIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.7PhF09gOPUbe7lrBf9jpWr3Yyfy5JRSYwf4LIkaGxgY';
+      var oauthData = StorageServiceForToken.getAll();
+      if(oauthData!=null && oauthData.length>0){
+          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      }else{
+        voucherDetails='First authenticate and then make this call.';
+      }
+
+      $http({
+        method: 'POST',
+        url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/voucher',
+        data: voucherObj,
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': authorizationToken
+        }}).then(function(result) {
+          console.log('Success', result); 
+          voucherDetails=result;
+          deferred.resolve(result);
+          $ionicLoading.hide(); 
+           console.log(result);
+       }, function(err) {
+          console.error('ERR', err);
+          $ionicLoading.hide();
+          var alertPopup = $ionicPopup.alert({
+            title: 'Error creating voucher',
+            template:'Error occured while calling the API:'+err+"."
+          });
+       });
+        return deferred.promise;
+    };
+
+    //Service to redeem the voucher
+    this.redeemVoucher = function(voucherObj) {
+      $ionicLoading.show(); 
+      var voucherDetails='';
+      var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoidGFubWF5LmFtYnJlQGluLmlibS5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDQ2NDU5MywidXNlck5hbWUiOiJ0YW5tYXkuYW1icmVAaW4uaWJtLmNvbSIsInVzZXJJZCI6InRhbm1heS5hbWJyZUBpbi5pYm0uY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjUxNjE1N2VhLWJiNzMtNDZlMy04ZGQ1LTA0M2FlMjk5YjJlNyIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.Nw5qIN3uzpoKfOUSbiBrqRSCtwylFqII7BM31sfHMDM';
+      var oauthData = StorageServiceForToken.getAll();
+      if(oauthData!=null && oauthData.length>0){
+          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      }else{
+        voucherDetails='First authenticate and then make this call.';
+      }
+
+      $http({
+        method: 'PATCH',
+        url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/voucher',
+        data: voucherObj,
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': authorizationToken
+        }}).then(function(result) {
+          console.log('Success', result); 
+          voucherDetails=result;
+          deferred.resolve(result);
+          $ionicLoading.hide(); 
+           console.log(result);
+       }, function(err) {
+          console.error('ERR', err);
+          $ionicLoading.hide();
+          var alertPopup = $ionicPopup.alert({
+            title: 'Error creating voucher',
+            template:'Error occured while calling the API:'+err+"."
+          });
+       });
+        return deferred.promise;
+    };
+})
+
+// //Factory for Voucher services
+// .factory('VoucherService', function($resource, constantService){
+//     var data = $resource('http://'+constantService.server+':'+constantService.port+constantService.baseURL+constantService.baseURLForOAuth+'/vocher' , {}, {
+//         createVoucher:{
+//             method:'POST', 
+//             headers: {
+//                   'Content-Type': 'application/json',
+//                   'Authorization': 'Bearer '
+//               }
+//             }
+//         });
+//    return data;
+// })
+
+
+//Factory for sign up service
+.factory('SignUpService', function($resource, constantService){
+    var data = $resource('http://'+constantService.server+':'+constantService.portForSignup+constantService.baseURLForOAuth+'/user' , {}, {
+        signup:{
+            method:'PUT',
+            headers: {
+                  'Content-Type': 'application/json'
+              }
+            }
+        });
+   return data;
+})
+
+//Factory for OAuth token Service
+.factory('OAuthService', function($resource,apiUrl, constantService){
 	//the authorization token is base 64 encoding of client ID and client secret
-    var data = $resource('http://inmbz2239.in.dst.ibm.com:8084/bigoauth2server/oauth/token' , {}, {
+    var data = $resource('http://'+constantService.server+':'+constantService.portForSignup+constantService.baseURLForOAuth+'/oauth/token' , {}, {
         general:{
             method:'POST',
             headers: {
@@ -60,12 +172,10 @@ angular.module('app.services', ['app-constants'])
               }
             }
         });
-
     return data;
 })
 
-
-// Storage Service for token
+// Factory for Storage Service for token (fetching, deleting)
 .factory ('StorageServiceForToken', function ($localStorage) {
     $localStorage = $localStorage.$default({
       tokenInformation: []

@@ -1,0 +1,42 @@
+body {
+  padding: 20px 0;
+}
+
+.container {
+  border: 3px dashed black;
+  position: relative;
+  width: 200px;
+  height: 50px;
+  margin: 0 auto;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none; 
+  -o-user-select: none;
+  user-select: none;
+  display: block;
+  margin: auto;
+  background-color: white !important;
+}
+
+.canvas {
+  position: absolute;
+  top: 0;
+}
+
+.form {
+  padding: 20px;
+}
+.vCard{
+  width: 70%;
+  background-color: #274A60;
+  border: 1px solid black;
+  display: block;
+  margin: auto;
+}
+.vvCard{
+  width: 99%;
+    height: 89%;
+    display: block;
+    border: 2px dashed white;
+    margin: auto;
+}

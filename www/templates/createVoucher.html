@@ -1,20 +1,37 @@
 <ion-view style="" id="page11" title="Create Voucher">
-    <ion-content class="has-header" padding="true">
+    <ion-content class="has-header" padding="true" scroll="false">
         <a class="button button-stable button-small icon ion-ios-arrow-back" id="createVoucher-button29" ui-sref="menu.tiles"></a>
         <form class="list" id="createVoucher-form5">
-            <label id="createVoucher-input11" class="item item-input item-floating-label">
+            <label id="createVoucher-input11" class="item item-input">
                 <span class="input-label">Amount</span>
-                <input placeholder="Amount" type="number">
+                <input placeholder="Amount" type="number" ng-model="amount">
             </label>
-            <label id="createVoucher-select1" class="item item-select">
-                <span class="input-label">Account</span>
-                <select>
-                    <option>Barclays</option>
-                    <option>HDFC</option>
-                </select>
+            <label id="accountLabelId" class="item item-input">
+                <span class="input-label">Account Number</span>
+                <input placeholder="Account" type="number" ng-model="accountNumber">
+            </label>
+            <label id="descriptionLabelId" class="item item-input">
+                <span class="input-label">Description</span>
+                <input placeholder="description" type="text" ng-model="description">
             </label>
         </form>
-        <button class="button button-positive  button-block" id="createVoucher-button30">Create</button>
-        <button class="button button-positive  button-block button-clear" id="createVoucher-button31">Share Voucher</button>
+        <button class="button button-positive  button-block" id="createVoucher-button30" ng-click="createVoucher()">Create</button>
+        <br/>
+
+        <div class="vCard" ng-show="showVoucher">
+            <div class="vvCard">
+                <div style='text-align: center'><h4 style="color:white;">Voucher</h4></div>        
+                <div class="container" id="js-container" >        
+                    <canvas class="canvas" id="js-canvas" width="195" height="45"></canvas>
+                    <h4><code><b>{{voucherDetails.data.response.code}}</b></code></h4>
+                </div>
+                <br/>
+            </div>
+        </div>
+        
+      
+    <br/>
+
+    <button class="button button-positive  button-block button-clear" id="createVoucher-button31" ng-click="shareVoucher()" ng-show="showVoucher">Share Voucher</button>
     </ion-content>
-</ion-view>
+</ion-view>       

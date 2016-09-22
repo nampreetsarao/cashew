@@ -2,19 +2,15 @@
     <ion-content class="has-header" padding="true">
         <a class="button button-stable button-small icon ion-ios-arrow-back" id="redeemVoucher-button32" ui-sref="menu.tiles"></a>
         <form class="list" id="redeemVoucher-form6">
-            <label id="redeemVoucher-input12" class="item item-input item-floating-label">
+            <label id="redeemVoucher-input12" class="item item-input">
                 <span class="input-label">Code</span>
-                <input placeholder="Code" type="number">
+                <input placeholder="Code" type="text" ng-model="voucherCode">
             </label>
             <label id="redeemVoucher-input13" class="item item-input">
                 <span class="input-label">Apply To</span>
-                <input placeholder="" type="text">
-            </label>
-            <label id="redeemVoucher-input14" class="item item-input">
-                <span class="input-label">Send To</span>
-                <input placeholder="" type="text">
+                <input placeholder="Account number" type="text" ng-model="toAccount">
             </label>
         </form>
-        <button class="button button-positive  button-block" id="redeemVoucher-button33">Redeem</button>
+        <button class="button button-positive  button-block" id="redeemVoucher-button33" ng-click="redeemVoucher()">Redeem Voucher</button>
     </ion-content>
 </ion-view>
