@@ -1,9 +1,85 @@
-<ion-view style="" id="page10" title="Move Money">
+<ion-view style="" id="page10" title="Move Money" hide-nav-bar="true" class='movemoneybg'>
     <ion-content class="has-header" padding="true">
-        <a class="button button-light button-small button-block icon ion-ios-arrow-back" style="text-align:left;" id="moveMoney-button25" ui-sref="menu.tiles"></a>
-        <button class="button button-positive" style="text-align:left;" id="moveMoney-button24">Bucket 1</button>
-        <button class="button button-positive" style="text-align:left;" id="moveMoney-button26">Bucket 2</button>
-        <button class="button button-positive" style="text-align:left;" id="moveMoney-button27">Bucket 3</button>
-        <button class="button button-positive  button-block" id="moveMoney-button28">Make Payment</button>
+        <div class="container" style="text-align:center;">
+			<h1 style="color:white;">Move Money</h1>
+			<div class="content">
+				<div id="grid" class="grid clearfix">
+					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
+					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
+					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
+					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
+					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
+					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
+					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
+					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
+					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
+					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
+					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
+					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
+				</div>
+			</div><!-- /content -->
+		</div><!-- /container -->
+		<div id="drop-area" class="drop-area">
+			<div id='container'>
+				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
+				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
+				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
+				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
+				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
+				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
+				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
+				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
+				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
+				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
+				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
+				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
+			</div>
+		</div>
+		<div class="drop-overlay"></div>
+		
     </ion-content>
 </ion-view>
+<script id="my-modal.html" type="text/ng-template">
+  <ion-modal-view>
+    <div class="ion-modal-content-custom">
+      <ion-content id='mmWallet'>
+
+      	<form id="login" action="none">
+		    <h1 id="ff-proof" class="ribbon">Move Money &nbsp;&nbsp;</h1>
+		    <div class="apple">
+		    	<div class="top"><span></span></div>
+		    	<div class="butt"><span></span></div>
+		    	<div class="bite"></div>
+			</div>
+		    <fieldset id="inputs">
+		    	<div>From Account</div>
+		    	<select class='selects' ng-model='makePaymentObj.from.account_id'>
+		    		<option>Acc1</option>
+		    		<option>Acc1</option>
+		    		<option>Acc1</option>
+		    		<option>Acc1</option>
+		    	</select>
+		    	<div>To Account</div>
+		    	<select class='selects' ng-model='makePaymentObj.to.account_id'>
+		    		<option>Acc1</option>
+		    		<option>Acc1</option>
+		    		<option>Acc1</option>
+		    		<option>Acc1</option>
+		    	</select>
+		    	<!-- <div>Acount Number</div>
+		        <input id="username" type="number" onblur="if(this.value=='')this.value='Account Number';" onfocus="if(this.value=='Pseudo ID')this.value='';" value="Pseudo ID" /> -->
+		    	<div>Amount</div>
+		        <input id="username" type="number" ng-model='makePaymentObj.value.amount' onblur="if(this.value=='')this.value='Amount';" onfocus="if(this.value=='Pseudo ID')this.value='';" value="Pseudo ID" />
+		        <div>Description</div>
+		        <input id="password" type="text" ng-model='makePaymentObj.description' onblur="if(this.value=='')this.value='Description';" onfocus="if(this.value=='Mot de passe')this.value='';" value="Mot de passe" />
+		    </fieldset>
+		    <fieldset id="actions">
+		       <!--  <button class="button button-full button-positive" ng-click="closeModal()">Move</button> -->
+		       <input type="button" id="submit" value="Move" ng-click='moveMoney()'>
+		    </fieldset>
+		</form>
+        <!-- <button class="button button-full button-positive" ng-click="closeModal()">Move</button> -->
+      </ion-content>
+    </div>
+  </ion-modal-view>
+</script>

@@ -21,3 +21,23 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.directives
     }
   });
 })
+
+.run(['$state', '$window',
+    function($state, $window) {
+        $window.addEventListener('LaunchUrl', function(event) {
+            // gets page name from url
+            var page =/.*:[/]{2}([^?]*)[?]?(.*)/.exec(event.detail.url)[1];
+            // redirects to page specified in url
+            //$state.go('tab.'+ page, {});
+            $state.go('menu.moveMoney', {});
+            
+        });
+    }
+]);
+
+function handleOpenURL(url) {
+    setTimeout( function() {
+        var event = new CustomEvent('LaunchUrl', {detail: {'url': url}});
+        window.dispatchEvent(event);
+    }, 0);
+}

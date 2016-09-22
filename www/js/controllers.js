@@ -104,9 +104,9 @@
   .controller('loginCtrl', function($scope, OAuthService,$http, $state,$interval, $cordovaInAppBrowser,StorageServiceForToken, $ionicPopup) {
       
       $scope.loginOAuth =  function(){
-        // 
+        // cordova.InAppBrowser
       var ref =cordova.InAppBrowser.open('http://inmbz2239.in.dst.ibm.com:8084/bigoauth2server/oauth/authorize?client_id=4a4b0281-49b1-4533-b3ac-eee11f1f6bd8&redirect_uri=http://localhost/callback&scope=read&response_type=code', '_blank', 'location=no,clearsessioncache=yes,clearcache=yes,toolbar=yes');
-      ref.addEventListener('loadstart', function(event) {
+      ref.addEventListener('onload', function(event) {
       //alert('event url'+event.url);
       if ((event.url).startsWith("http://localhost/callback")) {
             $scope.requestToken = (event.url).split("code=")[1];
@@ -444,13 +444,127 @@
 
   }])
      
-  .controller('moveMoneyCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
-  // You can include any angular dependencies as parameters for this function
-  // TIP: Access Route Parameters for your page via $stateParams.parameterName
-  function ($scope, $stateParams) {
+ .controller('moveMoneyCtrl', ['$scope', '$stateParams', '$ionicModal',  // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+// You can include any angular dependencies as parameters for this function
+// TIP: Access Route Parameters for your page via $stateParams.parameterName
+function ($scope, $stateParams,  $ionicModal) {
+
+  $scope.callitgo = function(){
+      var popup = document.getElementById( 'popup-area' );
+      classie.remove( popup, 'show' );  
+  };
 
 
-  }])
+    var body = document.body;
+    var dropArea = document.getElementById( 'drop-area' );
+    var droppableArr = [];
+    var dropAreaTimeout;
+    classie.add( dropArea, 'show' );
+
+
+    $scope.closeModal = function() {
+    $scope.modal.hide();
+  };
+  //Cleanup the modal when we're done with it!
+  $scope.$on('$destroy', function() {
+    $scope.modal.remove();
+  });
+  // Execute action on hide modal
+  $scope.$on('modal.hidden', function() {
+    // Execute action
+  });
+  // Execute action on remove modal
+  $scope.$on('modal.removed', function() {
+    // Execute action
+  });
+
+  $scope.moveMoney = function(){
+     $scope.modal.remove();
+  };
+
+$scope.makePaymentObj = {
+          "type": "",
+          "from": {
+              "bank_id": "",
+              "account_id": ""
+          },
+          "to":{
+              "bank_id":"",
+              "account_id":""
+            },  
+          "value":{
+              "currency":"GBP",
+              "amount":""
+            },
+          "description":""
+      };
+  //** Drag-n-Drop functionality **//
+    // initialize droppables
+        [].slice.call( document.querySelectorAll( '#drop-area .drop-area__item' )).forEach( function( el ) {
+          droppableArr.push( new Droppable( el, {
+
+            onDrop : function( instance, draggableEl ) {
+              // show checkmark inside the droppabe element
+              classie.add( instance.el, 'drop-feedback' );
+              clearTimeout( instance.checkmarkTimeout );
+              $scope.elem = $(instance.el);
+              $(instance.el).toggleClass("clicked");
+              instance.checkmarkTimeout = setTimeout( function() { 
+                classie.remove( instance.el, 'drop-feedback' );
+              }, 800 );
+
+              // ...
+            }
+          } ) );
+        } );
+
+        // initialize draggable(s)
+        [].slice.call(document.querySelectorAll( '#grid .grid__item' )).forEach( function( el ) {
+          new Draggable( el, droppableArr, {
+            draggabilly : { containment: document.body },
+            onStart : function() {
+              // add class 'drag-active' to body
+              classie.add( body, 'drag-active' );
+              // clear timeout: dropAreaTimeout (toggle drop area)
+              clearTimeout( dropAreaTimeout );
+              // show dropArea
+              classie.add( dropArea, 'show');
+            },
+            onEnd : function(wasDropped ) {
+              var afterDropFn = function() {
+                // hide dropArea
+                //classie.remove( dropArea, 'show' );
+                // remove class 'drag-active' from body
+                classie.remove( body, 'drag-active' );
+                $($scope.elem).removeClass("clicked");
+
+                //Payment popup
+                $ionicModal.fromTemplateUrl('my-modal.html', {
+                  scope: $scope,
+                  animation: 'jelly'
+                }).then(function(modal) {
+                  $scope.modal = modal;
+                  $scope.modal.show();
+
+                });
+
+                 /////open popup to make a payment
+                  //$(instance.el).toggleClass("clicked");
+              };
+
+              if( !wasDropped ) {
+                afterDropFn();
+              }
+              else {
+                // after some time hide drop area and remove class 'drag-active' from body
+                clearTimeout( dropAreaTimeout );
+                dropAreaTimeout = setTimeout( afterDropFn, 1400 );
+              }
+            }
+          } );
+        } );
+}])
+
      
   .controller('createVoucherCtrl', function ($scope, $stateParams,$state, voucherService, $ionicPopup, $cordovaSocialSharing) {
     var j = document.createElement('script');

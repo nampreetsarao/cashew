@@ -2,7 +2,7 @@ body {
   padding: 20px 0;
 }
 
-.container {
+.container_scratch {
   border: 3px dashed black;
   position: relative;
   width: 200px;
