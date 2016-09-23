@@ -2,18 +2,28 @@
     <ion-content class="has-header" padding="true">
         <ion-slide-box style="height:50%;" class="tile tile-double hovereffect">
             <ion-slide>
-                <nvd3 options="options" data="data"></nvd3>                  
+                <nvd3 options="allBankAccountDataOptions" data="allBankAccountData"></nvd3>                  
             </ion-slide>
             <ion-slide>
                 <nvd3 options="allAccountTransactionOptions" data="allAccountTranData"></nvd3>
             </ion-slide>
             <ion-slide>
-                <canvas id="line" class="chart chart-line" chart-data="dataLine" chart-labels="labelsLine" chart-legend="seriesLine" chart-series="seriesLine" chart-options="{showTooltips: true}"></canvas>
+                <canvas id="line" class="chart chart-line" chart-data="allAccountAvgMonthTranData" chart-labels="allAccountAvgMonthTranLabel" chart-legend="allAccountAvgTranSeries" chart-series="allAccountAvgTranSeries" chart-options="{showTooltips: true}"></canvas>
             </ion-slide>
         </ion-slide-box>
         <div class="spacer" style="width: 250px; height: 300px;"></div>
-        <button class="button button-balanced  button-block" style="border-radius:10px 10px 10px 10px;" id="account-button8">Total Balance: 3,50,000</button>
+        <button class="button button-balanced  button-block" style="border-radius:10px 10px 10px 10px;" id="account-button8">Total Balance : {{consildatedAmount}}</button>
         <button class="button button-positive  button-block" style="border-radius:10px 10px 10px 10px;" id="account-button9">Assets: 2,50,000</button>
         <button class="button button-assertive  button-block" style="border-radius:10px 10px 10px 10px;" id="account-button10">Liability: -1,00,000</button>
+        <ion-list show-delete="false" can-swipe="true">
+           <ion-item ng-repeat="i in allAccountTransactionsList">
+                <button class="button button-energized button-inline card" ng-hide="i.tag == undefined" style="height:10px;border-radius:80px 80px 80px 80px;" id="account-button8">{{i.tag}}</button>
+                <div class="input-label card" style="color: black; font-weight: 600; width:100%;">
+                    Description: {{i.detailsDescription}}<br>Amount : {{i.detailsValue}}<br>Date: {{i.postedDate | date : "dd/MM/y"}}                    
+                </div>
+                <button class="button button-balanced card" ng-hide="i.tag != undefined" style="height:10px;border-radius:80px 80px 80px 80px;" id="account-button8" ng-click="showTagPopup()">?</button>
+                <ion-delete-button class="ion-minus-circled" ng-click="deleteItem(i)"></ion-delete-button>
+           </ion-item>
+        </ion-list>
     </ion-content>
 </ion-view>

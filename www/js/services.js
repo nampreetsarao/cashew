@@ -130,10 +130,86 @@ angular.module('app.services', ['app-constants'])
        });
         return deferred.promise;
     };
+})
 
+//Tag Service
+.service('getTags', function($state, $http, $q, $ionicPopup, constantService, StorageServiceForToken){
+  this.getAllTags = function(){
+    var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjQ5NzM5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjI3ZjQ3MDVhLWU5NzQtNDJmMi1iY2Q5LTQzZTk5YjA5M2EwZSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.CGrIDlpkbgvNjS4vDjnXfiVXfLd3yA-6OhzQQUojUOg';
+    var oauthData = StorageServiceForToken.getAll();
+    if(oauthData!=null && oauthData.length>0){
+        authorizationToken = 'Bearer '+ oauthData[0].access_token;
+    }else{
+      voucherDetails='First authenticate and then make this call.';
+    }
+    return $q(function(resolve, reject){
+      var date = new Date();
+      var req = {
+          url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/tags',
+            method:'GET',
+            headers : {
+               'Accept' : 'application/json',
+               'Content-Type':'application/json',
+               'Authorization' : authorizationToken,
+            }
+          }
+          $http(req)
+          .then(function(getAllTags) {
+            console.log(getAllTags);            
+            // function to retrive the response
+            if (getAllTags.status == 200) {
+              resolve(getAllTags.data.response);
+            } else {
+              reject('Update Expertise Failed!');
+            }
+          },
+          function(err) {
+            reject(err);
+          });
+    });
+  }  
+})
 
+.service('tagService', function($http, $q, $ionicLoading,$ionicPopup, constantService, StorageServiceForToken){
+    var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjQ5NzM5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjI3ZjQ3MDVhLWU5NzQtNDJmMi1iY2Q5LTQzZTk5YjA5M2EwZSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.CGrIDlpkbgvNjS4vDjnXfiVXfLd3yA-6OhzQQUojUOg';
+    var oauthData = StorageServiceForToken.getAll();
+    if(oauthData!=null && oauthData.length>0){
+        authorizationToken = 'Bearer '+ oauthData[0].access_token;
+    }else{
+      voucherDetails='First authenticate and then make this call.';
+    }
+
+    /*
+      Add Tags
+      API : Add Tags
+    */
+    this.addTags = function(tagValue){
+      return $q(function(resolve, reject){
+        $http({
+          method: 'PATCH',
+          url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/iceman@gmail.com/tags',
+          data: tagValue,
+          headers: {
+          'Content-Type': 'application/json',
+          'Authorization': authorizationToken
+          }}).then(function(result) {
+            console.log('Success', result); 
+            
+         }, function(err) {
+            console.error('ERR', err);
+            $ionicLoading.hide();
+            var alertPopup = $ionicPopup.alert({
+              title: 'Error creating voucher',
+              template:'Error occured while calling the API:'+err+"."
+            });
+         })
+      });
+    }
 
 })
+
+
+
 
 
 //Reminders  service 
@@ -298,23 +374,35 @@ angular.module('app.services', ['app-constants'])
 })
 
 
+
 //Account and account details Service
-.service('accountTransactionAPI', function($http, $q, $ionicPopup, $ionicLoading){
-  //specific account details chart
+.service('accountTransactionAPI', function($http, $q, constantService, StorageServiceForToken){
+  var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjQ5NzM5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjI3ZjQ3MDVhLWU5NzQtNDJmMi1iY2Q5LTQzZTk5YjA5M2EwZSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.CGrIDlpkbgvNjS4vDjnXfiVXfLd3yA-6OhzQQUojUOg';
+    var oauthData = StorageServiceForToken.getAll();
+    if(oauthData!=null && oauthData.length>0){
+        authorizationToken = 'Bearer '+ oauthData[0].access_token;
+    }else{
+      voucherDetails='First authenticate and then make this call.';
+    }
+  /*
+    specific account transaction distribution details chart
+    API : Get Transaction Distribution Graph
+  */
   this.accountTransactionDistribution = function(){
     return $q(function(resolve, reject){
+      var date = new Date();
       var req = {
-          url: 'http://inmbz2239.in.dst.ibm.com:8085/cashewapi/user/tanmay.ambre@in.ibm.com/transactions/distribution',
+          url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/iceman@gmail.com/transactions/distribution',
             method:'GET',
             headers : {
                'Accept' : 'application/json',
                'Content-Type':'application/json', 
-               'Authorization' : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoidGFubWF5LmFtYnJlQGluLmlibS5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDYwOTY5OCwidXNlck5hbWUiOiJ0YW5tYXkuYW1icmVAaW4uaWJtLmNvbSIsInVzZXJJZCI6InRhbm1heS5hbWJyZUBpbi5pYm0uY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImEzYjlhMDM5LTQyYmMtNGE2OC05OGYyLWVhZjg5YWU5MDllOCIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.EFWGtOgl-2bhyjBYWNQwMVrpwgs2NirzfQ80YZ-Mcmg',
-               'fromDate' : '2016-01-01T00:00:00.000+0530', 
-               'toDate' : '2016-11-01T00:00:00.000+0530'
+               'Authorization' : authorizationToken,
+               'fromDate' : new Date(date.getFullYear(), date.getMonth(), 1).toString('yyyy-MM-dd')+"T00:00:00.000+0530", 
+               'toDate' : (new Date(date.getFullYear(), date.getMonth()+1, 0)).toString('yyyy-MM-dd')+"T00:00:00.000+0530"
             },
               params: {                    
-                  projectId: '6111',
+                  accountId: '7278',
                   bankId: 'IBMGB'
                 }
           }
@@ -334,46 +422,22 @@ angular.module('app.services', ['app-constants'])
     });
   }
 
-  //specific account transaction data
-  this.accountTransactions = function(){
-    return $q(function(resolve, reject){
-      var req = {
-          url: 'http://inmbz2239.in.dst.ibm.com:8085/cashewapi/iceman@gmail.com/IBMGB/7278/transactions',
-            method:'GET',
-            headers : {
-               'Accept' : 'application/json',
-               'Content-Type':'application/json', 
-               'Authorization' : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoidGFubWF5LmFtYnJlQGluLmlibS5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDUyMzc3OSwidXNlck5hbWUiOiJ0YW5tYXkuYW1icmVAaW4uaWJtLmNvbSIsInVzZXJJZCI6InRhbm1heS5hbWJyZUBpbi5pYm0uY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjdlZGY4MTgzLTM5YzItNDcyNy1iMjE2LTgyOWM4M2EwNDUwYSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.N6JvdosxmswXhg7RuFRFHRfQVIdn4fGpNveDc1cghtQ'
-            }
-          }
-          $http(req)
-          .then(function(accountTransactionsData) {
-            console.log(accountTransactionsData);            
-            // function to retrive the response
-            if (accountTransactionsData.status == 200) {
-              resolve(accountTransactionsData.data.response);
-            } else {
-              reject('Update Expertise Failed!');
-            }
-          },
-          function(err) {
-            reject(err);
-          });
-    });
-  }
-
-  //consolidated account details chart
+  /*
+    consolidated account transaction distribution details chart
+    API : Get Transaction Distribution Graph
+  */
   this.allAccountTransactionDistribution = function(){
     return $q(function(resolve, reject){
+      var date = new Date();
       var req = {
-          url: 'http://inmbz2239.in.dst.ibm.com:8085/cashewapi/user/tanmay.ambre@in.ibm.com/transactions/distribution',
+          url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/iceman@gmail.com/transactions/distribution',
             method:'GET',
             headers : {
                'Accept' : 'application/json',
                'Content-Type':'application/json', 
-               'Authorization' : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoidGFubWF5LmFtYnJlQGluLmlibS5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDUzMzM3OCwidXNlck5hbWUiOiJ0YW5tYXkuYW1icmVAaW4uaWJtLmNvbSIsInVzZXJJZCI6InRhbm1heS5hbWJyZUBpbi5pYm0uY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6Ijc3ZTU3ZmQ2LTQyOTktNGYwOC04ZmU5LTg3MDQxZGViZjM5YSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.7fcwsJ0xyjfqJ6vQBRZ-MfrWU7oEV5a9qQikkWdrLmw',
-               'fromDate' : '2016-01-01T00:00:00.000+0530', 
-               'toDate' : '2016-11-01T00:00:00.000+0530'
+               'Authorization' : authorizationToken,
+               'fromDate' : new Date(date.getFullYear(), date.getMonth(), 1).toString('yyyy-MM-dd')+"T00:00:00.000+0530", 
+               'toDate' : (new Date(date.getFullYear(), date.getMonth()+1, 0)).toString('yyyy-MM-dd')+"T00:00:00.000+0530"
             }
           }
           $http(req)
@@ -391,29 +455,275 @@ angular.module('app.services', ['app-constants'])
           });
     });
   }
-
-  this.createTransactionRequest = function(fromAcc, makePaymentObj){
-      $ionicLoading.show(); 
-      $http.post("http://inmbz2239.in.dst.ibm.com:8085/cashewapi/iceman@gmail.com/IBMGB/"+fromAcc+"/payment", makePaymentObj, {
-        }).success(function(responseData) {
-            //do stuff with response
-            $ionicLoading.hide();
-            console.log('Success', responseData);
-            var alertPopup = $ionicPopup.alert({
-            title: 'Make a Payment',
-            template:'Transaction successfully submitted.'
+  /*
+    Specific user bank account details
+    API : Get User's Bank Account Details
+  */
+  this.specificBankAccountDetails = function(){
+    return $q(function(resolve, reject){
+      var req = {
+          url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/iceman@gmail.com/IBMGB/7278',
+            method:'GET',
+            headers : {
+               'Accept' : 'application/json',
+               'Content-Type':'application/json', 
+               'Authorization' : authorizationToken
+            }
+          }
+          $http(req)
+          .then(function(specificBankAccountDetailsData) {
+            console.log(specificBankAccountDetailsData);            
+            // function to retrive the response
+            if (specificBankAccountDetailsData.status == 200) {
+              resolve(specificBankAccountDetailsData.data.response);
+            } else {
+              reject('Update Expertise Failed!');
+            }
+          },
+          function(err) {
+            reject(err);
           });
-        }).failure(function(responseData) {
-            //do stuff with response
-            $ionicLoading.hide();
-            console.log('Error', responseData);
-            
-        });
-        $ionicLoading.hide();
-    };
+    });
+  }
+  
+  /*
+    consolidated user bank account details
+    API : Get User's Bank Account Details
+  */
+  this.allBankAccountDetails = function(){
+    return $q(function(resolve, reject){
+      var req = {
+          url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/iceman@gmail.com/accounts',
+            method:'GET',
+            headers : {
+               'Accept' : 'application/json',
+               'Content-Type':'application/json', 
+               'Authorization' : authorizationToken
+            }
+          }
+          $http(req)
+          .then(function(allBankAccountDetailsData) {
+            console.log(allBankAccountDetailsData);            
+            // function to retrive the response
+            if (allBankAccountDetailsData.status == 200) {
+              resolve(allBankAccountDetailsData.data.response);
+            } else {
+              reject('Update Expertise Failed!');
+            }
+          },
+          function(err) {
+            reject(err);
+          });
+    });
+  }
+  /*
+    specific account transaction data
+    API : Get User's Bank Account Transactions
+  */
+  this.accountTransactions = function(){
+    return $q(function(resolve, reject){
+      var req = {
+          url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/iceman@gmail.com/transactions',
+            method:'GET',
+            headers : {
+               'Accept' : 'application/json',
+               'Content-Type':'application/json', 
+               'Authorization' : authorizationToken
+            },
+              params: {                    
+                  accountId: '7278',
+                  bankId: 'IBMGB'
+                }
+          }
+          $http(req)
+          .then(function(accountTransactionsData) {
+            console.log(accountTransactionsData);            
+            // function to retrive the response
+            if (accountTransactionsData.status == 200) {
+              resolve(accountTransactionsData.data.response);
+            } else {
+              reject('Update Expertise Failed!');
+            }
+          },
+          function(err) {
+            reject(err);
+          });
+    });
+  }
+  /*
+    Consolidated account transaction data
+    API : Get User's Bank Account Transactions
+  */
+  this.allAccountTransactions = function(){
+    return $q(function(resolve, reject){
+      var req = {
+          url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/iceman@gmail.com/transactions',
+            method:'GET',
+            headers : {
+               'Accept' : 'application/json',
+               'Content-Type':'application/json', 
+               'Authorization' : authorizationToken
+            }
+          }
+          $http(req)
+          .then(function(allAccountTransactionsData) {
+            console.log(allAccountTransactionsData);            
+            // function to retrive the response
+            if (allAccountTransactionsData.status == 200) {
+              resolve(allAccountTransactionsData.data.response);
+            } else {
+              reject('Update Expertise Failed!');
+            }
+          },
+          function(err) {
+            reject(err);
+          });
+    });
+  }
 
+  /*
+    consolidated Avg. transaction expenses for past 3 months
+    API : Get User Avg Transaction Expense
+  */
+  this.allAccountAverageTransactionExpenses = function(){
+    return $q(function(resolve, reject){
+      var date = new Date();
+      var req = {
+          url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/iceman@gmail.com/transactions/histogram',
+            method:'GET',
+            headers : {
+               'Accept' : 'application/json',
+               'Content-Type':'application/json', 
+               'Authorization' : authorizationToken,
+               'fromDate' : Date.parse('t - 3m').toString('yyyy-MM-d')+"T00:00:00.000+0530", 
+               'toDate' : (new Date(date.getFullYear(), date.getMonth(), -1)).toString('yyyy-MM-dd')+"T00:00:00.000+0530"
+            }
+          }
+          $http(req)
+          .then(function(allAccountAverageTransactionExpensesData) {
+            console.log(allAccountAverageTransactionExpensesData);            
+            // function to retrive the response
+            if (allAccountAverageTransactionExpensesData.status == 200) {
+              resolve(allAccountAverageTransactionExpensesData.data.response);
+            } else {
+              reject('Update Expertise Failed!');
+            }
+          },
+          function(err) {
+            reject(err);
+          });
+    });
+  }
 
+  /*
+    consolidated Avg. transaction expenses for this month
+    API : Get User Avg Transaction Expense
+  */
+  this.allAccountAverageTransactionForMonthExprenses = function(){
+    return $q(function(resolve, reject){
+      var date = new Date();
+      var req = {
+          url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/iceman@gmail.com/transactions/histogram',
+            method:'GET',
+            headers : {
+               'Accept' : 'application/json',
+               'Content-Type':'application/json', 
+               'Authorization' : authorizationToken,
+               'fromDate' : (new Date(date.getFullYear(), date.getMonth(), 1)).toString('yyyy-MM-dd')+"T00:00:00.000+0530", 
+               'toDate' : (new Date(date.getFullYear(), date.getMonth() + 1, 0)).toString('yyyy-MM-dd')+"T00:00:00.000+0530"
+            }
+          }
+          $http(req)
+          .then(function(allAccountAverageTransactionExpensesData) {
+            console.log(allAccountAverageTransactionExpensesData);            
+            // function to retrive the response
+            if (allAccountAverageTransactionExpensesData.status == 200) {
+              resolve(allAccountAverageTransactionExpensesData.data.response);
+            } else {
+              reject('Update Expertise Failed!');
+            }
+          },
+          function(err) {
+            reject(err);
+          });
+    });
+  }
+  /*
+    specific account Avg. transaction expenses for past 3 months
+    API : Get User Avg Transaction Expense
+  */
+  this.specificAccountAverageTransactionExpenses = function(){
+    return $q(function(resolve, reject){
+      var date = new Date();
+      var req = {
+          url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/iceman@gmail.com/transactions/histogram',
+            method:'GET',
+            headers : {
+               'Accept' : 'application/json',
+               'Content-Type':'application/json', 
+               'Authorization' : authorizationToken,
+               'fromDate' : Date.parse('t - 3m').toString('yyyy-MM-d')+"T00:00:00.000+0530", 
+               'toDate' : (new Date(date.getFullYear(), date.getMonth(), -1)).toString('yyyy-MM-dd')+"T00:00:00.000+0530"
+            },
+              params: {                    
+                  accountId: '7278',
+                  bankId: 'IBMGB'
+                }
+          }
+          $http(req)
+          .then(function(specificAccountAverageTransactionExpensesData) {
+            console.log(specificAccountAverageTransactionExpensesData);            
+            // function to retrive the response
+            if (specificAccountAverageTransactionExpensesData.status == 200) {
+              resolve(specificAccountAverageTransactionExpensesData.data.response);
+            } else {
+              reject('Update Expertise Failed!');
+            }
+          },
+          function(err) {
+            reject(err);
+          });
+    });
+  }
+  /*
+    specific Avg. transaction expenses for this month
+    API : Get User Avg Transaction Expense
+  */
+  this.specificAccountAverageTransactionForMonthExprenses = function(){
+    return $q(function(resolve, reject){
+      var date = new Date();
+      var req = {
+          url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/iceman@gmail.com/transactions/histogram',
+            method:'GET',
+            headers : {
+               'Accept' : 'application/json',
+               'Content-Type':'application/json', 
+               'Authorization' : authorizationToken,
+               'fromDate' : (new Date(date.getFullYear(), date.getMonth(), 1)).toString('yyyy-MM-dd')+"T00:00:00.000+0530", 
+               'toDate' : (new Date(date.getFullYear(), date.getMonth() + 1, 0)).toString('yyyy-MM-dd')+"T00:00:00.000+0530"
+            },
+              params: {                    
+                  accountId: '7278',
+                  bankId: 'IBMGB'
+                }
+          }
+          $http(req)
+          .then(function(specificAccountAverageMonthTransactionExpensesData) {
+            console.log(specificAccountAverageMonthTransactionExpensesData);            
+            // function to retrive the response
+            if (specificAccountAverageMonthTransactionExpensesData.status == 200) {
+              resolve(specificAccountAverageMonthTransactionExpensesData.data.response);
+            } else {
+              reject('Update Expertise Failed!');
+            }
+          },
+          function(err) {
+            reject(err);
+          });
+    });
+  }
 })
+
 
 //get All Account details service
 .service('getAllAccountsDetailsService', function($state,$http,$q,$ionicLoading,constantService,StorageServiceForToken,$ionicPopup) {

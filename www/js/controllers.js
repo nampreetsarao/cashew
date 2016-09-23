@@ -22,6 +22,7 @@
 
    StorageService.remove($scope.profileData);
    StorageService.add($scope.profileData);
+   $scope.data={};
 
    //adding popup 
    var myPopup = $ionicPopup.show({
@@ -50,74 +51,68 @@
       $state.go('menu.subscription');
           
   });
+   /*
+      consolidated user bank account details
+      API : Get User's Bank Account Details
+      Service : allBankAccountDetails
+    */
+    $scope.allBankAccountDetailsData = accountTransactionAPI.allBankAccountDetails()
+      .then(function(allBankAccountData){      
+        var allBankAccountLabel = [];
+        var allBankAccountSeries = [];
+        var data1 = [];
+        var sumAmt = "0";
+        for(var i=0;i<allBankAccountData.length;i++){
+          var a=[];
+          allBankAccountLabel.push(allBankAccountData[i].bankId);
+          //loop for getting value with bucket                  
+          //for(var j=0;j<allBankAccountData[0].buckets[i].aggregations.length;j++){
+            a.push(allBankAccountData[i].balance.amount);  
+            var k = allBankAccountData[i].bankId;
+            var y = allBankAccountData[i].balance.amount;
+            sumAmt = parseInt(sumAmt) + parseInt(allBankAccountData[i].balance.amount);
+            $scope.consildatedAmount = sumAmt
+            var obj = {
+              "key": k,
+              "y": y
+            };
+          //}
 
-  $scope.total = "1,50,000";
-
-    $scope.options = {  
-    chart: {
-    	pie: {
-        dispatch: {
-            elementClick: function(e) { 
-            	var account = e.data.key;
-            	console.log("details");
-            	$state.go("accountDetails");
-            	e.event.stopPropagation();
-            },
-            chartClick: function(e) {
-
-            	console.log("DASHBOARD");
-            	$state.go("account");
-            }
+          data1.push(obj);
         }
-      },
-      type: 'pieChart',
-      height: 210,
-      x: function(d){return d.key;},
-      y: function(d){return d.y;},
-      showLabels: true,
-      duration: 500,
-      labelThreshold: 0.01,
-      labelSunbeamLayout: true,
-      width: 250,
-      title: $scope.total,
-      donut: true,
-      tooltips: true,
-      legendPosition: 'top',
-      showLegend: false
-    }
-  };
-
-    $scope.data = [  
-    {
-      key: "Barclays",
-      y: 500
-    },
-    {
-      key: "HSBC",
-      y: 200
-    },
-    {
-      key: "ICICI",
-      y: 900
-    },
-    {
-      key: "AXIS",
-      y: 700
-    },
-    {
-      key: "RBS",
-      y: 400
-    },
-    {
-      key: "Tesco",
-      y: 300
-    },
-    {
-      key: "Halifax",
-      y: 50
-    }
-  ];
-
+        $scope.allBankAccountDataOptions = {  
+          chart: {
+            type: 'pieChart',
+            x: function(d){return d.key;},
+            y: function(d){return d.y;},
+            showLabels: true,
+            duration: 500,
+            labelThreshold: 0.01,
+            labelSunbeamLayout: true,
+            height: 200,
+            width: 200,
+            title: sumAmt,
+            donut: true,
+            tooltips: false,
+            legendPosition: 'top',
+            showLegend: false
+          }
+        };
+        //loop for names from bucket, which to take only once
+        /*for(var h=0;h<allBankAccountData[0].buckets[h].aggregations.length;h++){
+          allBankAccountSeries.push(allBankAccountData[0].buckets[h].aggregations[h].name);            
+        }*/
+        $scope.allBankAccountLabel = allBankAccountLabel;
+        $scope.allBankAccountSeries = allBankAccountLabel;         
+        var realignBurndownData = _.unzip(data1);    
+        $scope.allBankAccountData = data1;
+        console.log($scope.allBankAccountData);
+      }, function(err){
+      var alertPopup = $ionicPopup.alert({
+          title: 'Search Failed!',
+          template: 'There was some problem with server.'
+      });
+    });
   	
 
   }])
@@ -221,66 +216,214 @@
   })
      
     
+    
 .controller('accountCtrl', function ($scope, $stateParams,$ionicPopup, accountTransactionAPI) {
-
-  $scope.total = "1,50,000";
-  $scope.options = {  
-    chart: {
-      type: 'pieChart',
-      x: function(d){return d.key;},
-      y: function(d){return d.y;},
-      showLabels: true,
-      duration: 500,
-      labelThreshold: 0.01,
-      labelSunbeamLayout: true,
-      height: 280,
-      width: 250,
-      title: $scope.total,
-      donut: true,
-      tooltips: false,
-      legendPosition: 'top',
-      showLegend: false
+  //showing popup for creating new custom tag
+    $scope.showTagPopup = function() {
+    $scope.data = {};
+      // An elaborate, custom popup
+      var myPopup = $ionicPopup.show({
+        template: '<label class="item item-input card" id="dashboard-input10" style="border-radius:10px 10px 10px 10px;width:90%;"><span class="input-label" style="font-weight:500;font-size:15px;text-align:left;">Tag Name</span><input type="text" placeholder="" ng-model="data.tagName"></label>'+
+                  '<div class="spacer " style="width: 100%;"></div><label class="item item-input card" id="dashboard-input11" style="border-radius:10px 10px 10px 10px;width:90%;"><span class="input-label" style="font-weight:500;font-size:15px;text-align:left;">Spent Limit</span><input type="number" placeholder="" ng-model="data.spentLimit"></label>',
+        title: 'Create New Tag',
+        subTitle: '',
+        scope: $scope,
+        buttons: [
+          { text: 'Cancel' },
+          {
+            text: '<b>Submit</b>',
+            type: 'button-positive',
+            onTap: function(e) {
+            //Calling Add tag api
+              //$scope.AllChrts($scope.data.sprintNo, $scope.data.projectSelect);
+            }
+          }
+        ]
+      });
     }
-  };
-  $scope.data = [  
-    {
-      key: "Barclays",
-      y: 500
-    },
-    {
-      key: "HSBC",
-      y: 200
-    },
-    {
-      key: "ICICI",
-      y: 900
-    },
-    {
-      key: "AXIS",
-      y: 700
-    },
-    {
-      key: "RBS",
-      y: 400
-    },
-    {
-      key: "Tesco",
-      y: 300
-    },
-    {
-      key: "Halifax",
-      y: 50
-    }
-  ];
 
-  $scope.labelsLine = ["January", "February", "March", "April", "May", "June", "July"];
-  $scope.seriesLine = ['Series A', 'Series B'];
-  $scope.dataLine = [
-      [65, 59, 80, 81, 56, 55, 40],
-      [28, 48, 40, 19, 86, 27, 90]
-  ];
+  /*
+    Consolidated account transaction data
+    API : Get User's Bank Account Transactions
+    Service : accountTransactions
+  */
+  $scope.allAaccountTransactionsData = accountTransactionAPI.allAccountTransactions()
+    .then(function(allAccountTransData){
+      var allAccountTransDataList = [];
+      for(var i=0;i<allAccountTransData.length;i++){
+        var allAccountTransactionsStruc={
+          id : allAccountTransData[i].to.accountId,
+          bankName : allAccountTransData[i].to.bankId,
+          detailsDescription : allAccountTransData[i].details.description,
+          detailsValue : allAccountTransData[i].details.value.amount,
+          postedDate : allAccountTransData[i].details.completed,
+          tag: allAccountTransData[i].details.tag
+        };
+        allAccountTransDataList.push(allAccountTransactionsStruc);
+      }
+      $scope.allAccountTransactionsList = allAccountTransDataList;
 
-  //All account transaction date chart
+    }, function(err){
+    var alertPopup = $ionicPopup.alert({
+      title: 'Search Failed!',
+      template: 'There was some problem with server.'
+    });
+  });
+
+  /*
+    consolidated Avg. transaction expenses for all accounts for last 3 months
+    API : Get User Avg Transaction Expense
+    Service : allAccountAverageTransactionExpenses
+  */
+  var aggArrayAvgVal = [];
+  var a=[];
+  $scope.allAccountAverageTransaction = accountTransactionAPI.allAccountAverageTransactionExpenses()
+    .then(function(allAccountAvgTranData){      
+      console.log(allAccountAvgTranData);
+      
+      var allAccountAvgTranLabel = [];
+      var allAccountAvgTranSeries = [];
+      
+      for(var i=0;i<allAccountAvgTranData[0].buckets.length;i++){
+        //var a=[];
+        for(var y=0;y<31;y++){
+          a.push(0);
+        }
+        allAccountAvgTranLabel.push(new Date(allAccountAvgTranData[0].buckets[i].key_as_string).toISOString().slice(0,10));
+        var len = new Date(allAccountAvgTranData[0].buckets[i].key_as_string).getDate();
+         //loop for getting value with bucket                  
+          for(var j=0;j<allAccountAvgTranData[0].buckets[i].aggregations.length;j++){
+            a.splice(len,0,allAccountAvgTranData[0].buckets[i].aggregations[j].value);
+          }
+      }
+      /*//loop for names from bucket, which to take only once
+      for(var h=0;h<allAccountAvgTranData[0].buckets[0].aggregations.length;h++){
+        allAccountAvgTranSeries.push(allAccountAvgTranData[0].buckets[0].aggregations[h].name);
+      }*/
+      allAccountAvgTranSeries.push(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31);
+      $scope.allAccountAvgTranLabel = allAccountAvgTranSeries;//allAccountAvgTranLabel;
+      $scope.allAccountAvgTranSeries = allAccountAvgTranSeries;         
+      var realignAllAccountAvgTranData = _.unzip(aggArrayAvgVal);    
+      $scope.allAccountAvgTranData = aggArrayAvgVal;//realignAllAccountAvgTranData;      
+      console.log($scope.allAccountAvgTranData);      
+      
+    }, function(err){
+    var alertPopup = $ionicPopup.alert({
+        title: 'Search Failed!',
+        template: 'There was some problem with server.'
+    });
+  });
+
+  /*
+    consolidated Avg. transaction expenses for all accounts for current months
+    API : Get User Avg Transaction Expense
+    Service : allAccountAverageTransactionForMonthExprenses
+  */
+  $scope.allAccountAverageForMonthTransaction = accountTransactionAPI.allAccountAverageTransactionForMonthExprenses()
+    .then(function(allAccountAvgMonthTranData){      
+      console.log(allAccountAvgMonthTranData);
+      var allAccountAvgMonthTranLabel = [];
+      var allAccountAvgMonthTranSeries = [];
+      
+      for(var i=0;i<allAccountAvgMonthTranData[0].buckets.length;i++){
+        var b=[];
+        for(var y=0;y<31;y++){
+          b.push(0);
+        }
+        allAccountAvgMonthTranLabel.push(new Date(allAccountAvgMonthTranData[0].buckets[i].key_as_string).toISOString().slice(0,10));
+        var len = new Date(allAccountAvgMonthTranData[0].buckets[i].key_as_string).getDate();
+         //loop for getting value with bucket                  
+          for(var j=0;j<allAccountAvgMonthTranData[0].buckets[i].aggregations.length;j++){
+            
+            //a.push(allAccountAvgTranData[0].buckets[i].aggregations[j].value);
+            b.splice(len,0,allAccountAvgMonthTranData[0].buckets[i].aggregations[j].value);
+          }
+          //adding last 30 days avg (from above function) and current month data together
+          aggArrayAvgVal.push(a, b);
+      }
+      //Using maonths days as Series and Label
+      allAccountAvgMonthTranSeries.push(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31);
+      $scope.allAccountAvgMonthTranLabel = allAccountAvgMonthTranSeries;//allAccountAvgTranLabel;
+      $scope.allAccountAvgTranSeries = allAccountAvgMonthTranSeries;         
+      var realignAllAccountAvgTranData = _.unzip(aggArrayAvgVal);    
+      $scope.allAccountAvgMonthTranData = aggArrayAvgVal;//realignAllAccountAvgTranData;      
+      console.log($scope.allAccountAvgMonthTranData);      
+      
+    }, function(err){
+    var alertPopup = $ionicPopup.alert({
+        title: 'Search Failed!',
+        template: 'There was some problem with server.'
+    });
+  });
+
+  /*
+    consolidated user bank account details
+    API : Get User's Bank Account Details
+    Service : allBankAccountDetails
+  */
+  $scope.allBankAccountDetailsData = accountTransactionAPI.allBankAccountDetails()
+    .then(function(allBankAccountData){      
+      var allBankAccountLabel = [];
+      var allBankAccountSeries = [];
+      var data1 = [];
+      var sumAmt = "0";
+      for(var i=0;i<allBankAccountData.length;i++){
+        var a=[];
+        allBankAccountLabel.push(allBankAccountData[i].bankId);
+        //loop for getting value with bucket                  
+        //for(var j=0;j<allBankAccountData[0].buckets[i].aggregations.length;j++){
+          a.push(allBankAccountData[i].balance.amount);  
+          var k = allBankAccountData[i].bankId;
+          var y = allBankAccountData[i].balance.amount;
+          sumAmt = parseInt(sumAmt) + parseInt(allBankAccountData[i].balance.amount);
+          $scope.consildatedAmount = sumAmt
+          var obj = {
+            "key": k,
+            "y": y
+          };
+        //}
+
+        data1.push(obj);
+      }
+      $scope.allBankAccountDataOptions = {  
+        chart: {
+          type: 'pieChart',
+          x: function(d){return d.key;},
+          y: function(d){return d.y;},
+          showLabels: true,
+          duration: 500,
+          labelThreshold: 0.01,
+          labelSunbeamLayout: true,
+          height: 280,
+          width: 250,
+          title: sumAmt,
+          donut: true,
+          tooltips: false,
+          legendPosition: 'top',
+          showLegend: false
+        }
+      };
+      //loop for names from bucket, which to take only once
+      /*for(var h=0;h<allBankAccountData[0].buckets[h].aggregations.length;h++){
+        allBankAccountSeries.push(allBankAccountData[0].buckets[h].aggregations[h].name);            
+      }*/
+      $scope.allBankAccountLabel = allBankAccountLabel;
+      $scope.allBankAccountSeries = allBankAccountLabel;         
+      var realignBurndownData = _.unzip(data1);    
+      $scope.allBankAccountData = data1;
+      console.log($scope.allBankAccountData);
+    }, function(err){
+    var alertPopup = $ionicPopup.alert({
+        title: 'Search Failed!',
+        template: 'There was some problem with server.'
+    });
+  });
+
+  /*
+    consolidated account transaction data Graph
+    API : API : Get Transaction Distribution Graph
+    Service : allAccountTransactionDistribution
+  */
   $scope.allAccountTransactionData = accountTransactionAPI.allAccountTransactionDistribution()
     .then(function(allAccountTranData){      
       var allAccountTranLabel = [];
@@ -339,67 +482,162 @@
   });
 })
    
+   
 .controller('accountDetailsCtrl', function ($scope, $stateParams,$ionicPopup, accountTransactionAPI) {
+  /*
+    specific Avg. transaction expenses for all accounts for last 3 months
+    API : Get User Avg Transaction Expense
+    Service : allAccountAverageTransactionExpenses
+  */
+  var aggArrayAvgVal = [];
+  var a=[];
+  $scope.allAccountAverageTransaction = accountTransactionAPI.specificAccountAverageTransactionExpenses()
+    .then(function(specificAccountAvgTranData){      
+      console.log(specificAccountAvgTranData);
+      
+      var specificAccountAvgTranLabel = [];
+      var specificAccountAvgTranSeries = [];
+      
+      for(var i=0;i<specificAccountAvgTranData[0].buckets.length;i++){
+        //var a=[];
+        for(var y=0;y<31;y++){
+          a.push(0);
+        }
+        specificAccountAvgTranLabel.push(new Date(specificAccountAvgTranData[0].buckets[i].key_as_string).toISOString().slice(0,10));
+        var len = new Date(specificAccountAvgTranData[0].buckets[i].key_as_string).getDate();
+         //loop for getting value with bucket                  
+          for(var j=0;j<specificAccountAvgTranData[0].buckets[i].aggregations.length;j++){
+            a.splice(len,0,specificAccountAvgTranData[0].buckets[i].aggregations[j].value);
+          }
+      }
+      /*//loop for names from bucket, which to take only once
+      for(var h=0;h<allAccountAvgTranData[0].buckets[0].aggregations.length;h++){
+        allAccountAvgTranSeries.push(allAccountAvgTranData[0].buckets[0].aggregations[h].name);
+      }*/
+      specificAccountAvgTranSeries.push(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31);
+      $scope.specificAccountAvgTranLabel = specificAccountAvgTranSeries;//allAccountAvgTranLabel;
+      $scope.specificAccountAvgTranSeries = specificAccountAvgTranSeries;         
+      var realignAllAccountAvgTranData = _.unzip(aggArrayAvgVal);    
+      $scope.specificAccountAvgTranData = aggArrayAvgVal;//realignAllAccountAvgTranData;      
+      console.log($scope.specificAccountAvgTranData);      
+      
+    }, function(err){
+    var alertPopup = $ionicPopup.alert({
+        title: 'Search Failed!',
+        template: 'There was some problem with server.'
+    });
+  });
 
-  $scope.total = "1,50,000";
-  $scope.options = {  
-    chart: {
-      type: 'pieChart',
-      x: function(d){return d.key;},
-      y: function(d){return d.y;},
-      showLabels: true,
-      duration: 500,
-      labelThreshold: 0.01,
-      labelSunbeamLayout: true,
-      height: 280,
-      width: 250,
-      title: $scope.total,
-      donut: true,
-      tooltips: false,
-      legendPosition: 'top',
-      showLegend: false
-    }
-  };
+  /*
+    specific Avg. transaction expenses for all accounts for current months
+    API : Get User Avg Transaction Expense
+    Service : allAccountAverageTransactionForMonthExprenses
+  */
+  $scope.specificAccountAverageForMonthTransaction = accountTransactionAPI.specificAccountAverageTransactionForMonthExprenses()
+    .then(function(specificAccountAvgMonthTranData){      
+      console.log(specificAccountAvgMonthTranData);
+      var specificAccountAvgMonthTranLabel = [];
+      var specificAccountAvgMonthTranSeries = [];
+      
+      for(var i=0;i<specificAccountAvgMonthTranData[0].buckets.length;i++){
+        var b=[];
+        for(var y=0;y<31;y++){
+          b.push(0);
+        }
+        specificAccountAvgMonthTranLabel.push(new Date(specificAccountAvgMonthTranData[0].buckets[i].key_as_string).toISOString().slice(0,10));
+        var len = new Date(specificAccountAvgMonthTranData[0].buckets[i].key_as_string).getDate();
+         //loop for getting value with bucket                  
+          for(var j=0;j<specificAccountAvgMonthTranData[0].buckets[i].aggregations.length;j++){
+            
+            //a.push(allAccountAvgTranData[0].buckets[i].aggregations[j].value);
+            b.splice(len,0,specificAccountAvgMonthTranData[0].buckets[i].aggregations[j].value);
+          }
+          //adding last 30 days avg (from above function) and current month data together
+          aggArrayAvgVal.push(a, b);
+      }
+      //Using maonths days as Series and Label
+      specificAccountAvgMonthTranSeries.push(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31);
+      $scope.specificAccountAvgMonthTranLabel = specificAccountAvgMonthTranSeries;//allAccountAvgTranLabel;
+      $scope.allAccountAvgTranSeries = specificAccountAvgMonthTranSeries;         
+      var realignAllAccountAvgTranData = _.unzip(aggArrayAvgVal);    
+      $scope.specificAccountAvgMonthTranData = aggArrayAvgVal;//realignAllAccountAvgTranData;      
+      console.log($scope.specificAccountAvgMonthTranData);      
+      
+    }, function(err){
+    var alertPopup = $ionicPopup.alert({
+        title: 'Search Failed!',
+        template: 'There was some problem with server.'
+    });
+  });
 
-  $scope.data = [  
-    {
-      key: "Barclays",
-      y: 500
-    },
-    {
-      key: "HSBC",
-      y: 200
-    },
-    {
-      key: "ICICI",
-      y: 900
-    },
-    {
-      key: "AXIS",
-      y: 700
-    },
-    {
-      key: "RBS",
-      y: 400
-    },
-    {
-      key: "Tesco",
-      y: 300
-    },
-    {
-      key: "Halifax",
-      y: 50
-    }
-  ];
+  /*
+    Specific user bank account details
+    API : Get User's Bank Account Details
+    Service : specificBankAccountDetails
+  */
+  $scope.specificBankAccountDetailsData = accountTransactionAPI.specificBankAccountDetails()
+    .then(function(specificBankAccountData){      
+      var specificBankAccountLabel = [];
+      var specificBankAccountSeries = [];
+      var data1 = [];
+      var sumAmt = "0";
+      //for(var i=0;i<specificBankAccountData.length;i++){
+        var a=[];
+        specificBankAccountLabel.push(specificBankAccountData.bankId);
+        //loop for getting value with bucket                  
+        //for(var j=0;j<allBankAccountData[0].buckets[i].aggregations.length;j++){
+          a.push(specificBankAccountData.balance.amount);  
+          var k = specificBankAccountData.bankId;
+          var y = specificBankAccountData.balance.amount;
+          sumAmt = parseInt(sumAmt) + parseInt(specificBankAccountData.balance.amount);
+          $scope.consolidatedAmount = sumAmt
+          var obj = {
+            "key": k,
+            "y": y
+          };
+        //}
 
-  $scope.labelsLine = ["January", "February", "March", "April", "May", "June", "July"];
-  $scope.seriesLine = ['Series A', 'Series B'];
-  $scope.dataLine = [
-      [65, 59, 80, 81, 56, 55, 40],
-      [28, 48, 40, 19]
-  ];
+        data1.push(obj);
+      //}
+      $scope.specificBankAccountDataOptions = {  
+        chart: {
+          type: 'pieChart',
+          x: function(d){return d.key;},
+          y: function(d){return d.y;},
+          showLabels: true,
+          duration: 500,
+          labelThreshold: 0.01,
+          labelSunbeamLayout: true,
+          height: 280,
+          width: 250,
+          title: sumAmt,
+          donut: true,
+          tooltips: false,
+          legendPosition: 'top',
+          showLegend: false
+        }
+      };
+      //loop for names from bucket, which to take only once
+      /*for(var h=0;h<allBankAccountData[0].buckets[h].aggregations.length;h++){
+        allBankAccountSeries.push(allBankAccountData[0].buckets[h].aggregations[h].name);            
+      }*/
+      $scope.specificBankAccountLabel = specificBankAccountLabel;
+      $scope.specificBankAccountSeries = specificBankAccountLabel;         
+      var realignBurndownData = _.unzip(data1);    
+      $scope.specificBankAccountData = data1;
+      console.log($scope.specificBankAccountData);
+    }, function(err){
+    var alertPopup = $ionicPopup.alert({
+        title: 'Search Failed!',
+        template: 'There was some problem with server.'
+    });
+  });
 
-  //specific account transaction data chart
+  /*
+    specific account transaction data Graph
+    API : Get Transaction Distribution Graph
+    Service : accountTransactionDistribution
+  */
   $scope.accountTransactionData = accountTransactionAPI.accountTransactionDistribution()
     .then(function(accountTranData){      
       var accountTranLabel = [];
@@ -415,6 +653,7 @@
           var k = accountTranData[0].buckets[i].key_as_string;
           var y = accountTranData[0].buckets[i].aggregations[j].value;
           sumAmt = parseInt(sumAmt) + parseInt(accountTranData[0].buckets[i].aggregations[j].value);
+          $scope.totalAmount = sumAmt;
           var obj = {
             "key": k,
             "y": y
@@ -457,17 +696,22 @@
     });
   });
 
-  //Specific account transaction data
+  /*
+    Specific account transaction data
+    API : Get User's Bank Account Transactions
+    Service : accountTransactions
+  */
   $scope.accountTransactionsData = accountTransactionAPI.accountTransactions()
     .then(function(accountTransData){
       var accountTransDataList = [];
       for(var i=0;i<accountTransData.length;i++){
         var accountTransactionsStruc={
-          id : accountTransData[i].otherAccount.id,
-          bankName : accountTransData[i].otherAccount.bank.name,
+          id : accountTransData[i].to.accountId,
+          bankName : accountTransData[i].to.bankId,
           detailsDescription : accountTransData[i].details.description,
           detailsValue : accountTransData[i].details.value.amount,
-          postedDate : accountTransData[i].details.posted
+          postedDate : accountTransData[i].details.completed,
+          tag: accountTransData[i].details.tag
         };
         accountTransDataList.push(accountTransactionsStruc);
       }
@@ -481,14 +725,57 @@
   });
 })
 
+ .controller('tagsCtrl', function ($scope, $stateParams, $ionicPopup, getTags, tagService) {
+    //showing popup for creating new custom tag
+    $scope.addTagPopup = function() {
+      $scope.data = {};
+      // An elaborate, custom popup
+      var myPopup = $ionicPopup.show({
+        templateUrl: 'templates/createTags.html' ,
+        title: 'Create New Tag',
+        subTitle: '',
+        scope: $scope,
+        buttons: [
+          { text: 'Cancel' },
+          {
+            text: '<b>Submit</b>',
+            type: 'button-positive',
+            onTap: function(e) {
+              /*
+                Add Tag API Call
+                API : Add Tags
+                Service : 
+              */
+              var tagVal = $scope.data.tagName;
+              $scope.addTag = tagService.addTags(tagVal);
+
+                /*var newButton = document.createElement('button');
+                document.getElementById('addTagButton').appendChild(newButton);*/
+                $("<button class='button button-energized button-small button-inline' style='border: 0.5px solid;height: 100px; width:100px;border-radius:150px 150px 150px 150px;margin:2px 2px 2px 2px;'></button>").insertBefore("#vADD-button100");
+            }
+          }
+        ]
+      });
+    }
+    /*
+      Getting Tags
+      API : tags
+      Service : getAllTags
+    */
+    $scope.getAllTags = getTags.getAllTags()
+      .then(function(getAllTags){
+        $scope.tagsAll = getAllTags;
+        console.log($scope.tagsAll);
+      }, function(err){
+        var alertPopup = $ionicPopup.alert({
+          title: 'Search Failed!',
+          template: 'There was some problem with server.'
+        });
+      });
+  })
+
      
-  .controller('tagsCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
-  // You can include any angular dependencies as parameters for this function
-  // TIP: Access Route Parameters for your page via $stateParams.parameterName
-  function ($scope, $stateParams) {
 
-
-  }])
      
  .controller('moveMoneyCtrl', ['$scope', '$stateParams', '$ionicModal', 'getAllAccountsDetailsService', 'accountTransactionAPI', '$ionicLoading', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
