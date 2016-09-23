@@ -1,22 +1,57 @@
   angular.module('app.controllers', [])
     
-  .controller('tilesCtrl', ['$scope', '$stateParams', '$state', 'getAllAccountsDetailsService', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+  .controller('tilesCtrl', ['$scope', '$stateParams', '$state', 'getAllAccountsDetailsService','StorageService','profileService','$ionicPopup', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
   // You can include any angular dependencies as parameters for this function
   // TIP: Access Route Parameters for your page via $stateParams.parameterName
-  function ($scope, $stateParams, $state, getAllAccountsDetailsService) {
+  function ($scope, $stateParams, $state, getAllAccountsDetailsService,StorageService,profileService, $ionicPopup) {
 
    
    $scope.allAccounts = {};
       //calling all Accounts    
 
-      var promise = getAllAccountsDetailsService.getAllAccounts();
-      promise.then(function(data) {
-          $scope.allAccounts = data;
-      });
+    var promise = getAllAccountsDetailsService.getAllAccounts();
+    promise.then(function(data) {
+        $scope.allAccounts = data;
+    });
+     
+    //adding the profile information in the local storage
+   var promise2 =profileService.getProfile();
+   promise2.then(function(data) {
+        $scope.profileData = data;
+    });
 
+   StorageService.remove($scope.profileData);
+   StorageService.add($scope.profileData);
 
+   //adding popup 
+   var myPopup = $ionicPopup.show({
+          template: '',
+          title: 'Here for the first time?',
+          subTitle: 'Looks like you are here for the first time, lets set  you up!!',
+          scope: $scope,
+          buttons: [
+            
+            {
+              text: '<b>Ok</b>',
+              type: 'button-positive',
+              onTap: function(e) {
+                if (!$scope.data.wifi) {
+                  //don't allow the user to close unless he enters wifi password
+                  //e.preventDefault();
+                } else {
+                  return $scope.data.wifi;
+                }
+              }
+            }
+          ]
+  });
 
-  	$scope.total = "1,50,000";
+  myPopup.then(function(res) {
+      $state.go('menu.subscription');
+          
+  });
+
+  $scope.total = "1,50,000";
 
     $scope.options = {  
     chart: {
@@ -828,12 +863,111 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
 
 
   }])
+
+  .controller('subscriptionCtrl', function ($scope, $stateParams,$state, StorageService, $ionicPopup, subscriptionService) {
+     $scope.subscribe =  function(){
+
+     $scope.selfTxn= {
+        min:0,
+        max:20000,
+        value:10000
+    };
+    $scope.payeeTxn= {
+        min:0,
+        max:20000,
+        value:10000
+    };
+
+
+    $scope.merchantTxn= {
+        min:0,
+        max:20000,
+        value:10000
+    };
+
+
+   var subscriptionObj =
+              {
+                "subscriptionInfo":   {
+                  "username" : this.username,
+                  "accountId" : this.accountId,
+                  "bankId" : $('input[name="bankId"]:checked').val(),
+                  "viewIds": [{"id":"owner"}],
+                  "clientId": "cashew",
+                  "limits": [{
+                          "transactionRequestType": { "value" : "SELF"},
+                          "amount": { "currency" : "GBP", "amount" : this.selfTxn.value}
+                      },
+                      {
+                          "transactionRequestType": { "value" : "MERCHANT"},
+                          "amount": { "currency" : "GBP", "amount" : this.payeeTxn.value}
+                      },
+                      {
+                          "transactionRequestType": { "value" : "PAYEE"},
+                          "amount": { "currency" : "GBP", "amount" : this.merchantTxn.value}
+                      }
+                      ],
+                  "transactionRequestTypes": [{"value": "SELF"}, {"value": "MERCHANT"}, {"value": "PAYEE"}]
+              }
+    };
+$scope.challengeId = ''; 
+$scope.cId = "";
+
+
+      //dummyService
+    var promise = subscriptionService.subscribeUser("nisha.bhagdev@gmail.com",subscriptionObj);
+      promise.then(function(data) {
+          $scope.subscriptionResp = data;
+          $scope.answerChallenge=true;
+          $scope.challengeObj={
+              "appUsername": "cashewvoucher@gmail.com",
+              "challengeAnswer": {
+                "answer": "",
+                "id": $scope.subscriptionResp.data.response.challenge.id
+              },
+              "subscriptionRequestId": $scope.subscriptionResp.data.response.id
+            };
+           
+          //adding popup 
+       var myPopup = $ionicPopup.show({
+              template: '<input type="text" ng-model="challengeObj.challengeAnswer.answer">',
+              title: 'Please answer the subscription challenge',
+              subTitle: 'Pleases enter the challenge answer you received on your registered mobile.',
+              scope: $scope,
+              buttons: [
+                
+                {
+                  text: '<b>Ok</b>',
+                  type: 'button-positive',
+                  onTap: function(e) {
+                    if (!$scope.challengeObj.challengeAnswer.answer) {
+                      //don't allow the user to close unless he enters wifi password
+                      //e.preventDefault();
+                    } else {
+                      return $scope.challengeObj.challengeAnswer.answer;
+                    }
+                  }
+                }
+              ]
+      });
+
+      myPopup.then(function(res) {
      
-  .controller('profileCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
-  // You can include any angular dependencies as parameters for this function
-  // TIP: Access Route Parameters for your page via $stateParams.parameterName
-  function ($scope, $stateParams) {
+          var userId="nisha.bhagdev@gmail.com";
+          subscriptionService.answerSubscriptionChallenge(userId, $scope.challengeObj)
+              
+      });
+    });
 
 
-  }])
+   }
+
+
+
+
+  })     
+  
+  .controller('profileCtrl', function ($scope, $stateParams,$state, StorageService, $ionicPopup) {
+    $scope.profile= StorageService.getAll();
+  })
    

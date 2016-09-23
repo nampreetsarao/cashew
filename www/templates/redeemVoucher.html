@@ -1,35 +1,32 @@
 <ion-view style="" id="page12" title="Redeem Voucher" hide-nav-bar="true">
     <ion-content class="has-header" padding="true">
         <form id="login" action="none">
-            <h1 id="ff-proof" class="ribbon">Move Money &nbsp;&nbsp;</h1>
+            <h1 id="ff-proof" class="ribbon">Redeem Voucher &nbsp;&nbsp;</h1>
             <div class="apple">
                 <div class="top"><span></span></div>
                 <div class="butt"><span></span></div>
                 <div class="bite"></div>
             </div>
             <fieldset id="inputs">
-                <div>From Account</div>
-                <select class='selects' ng-model='makePaymentObj.from.account_id'>
-                    <option ng-repeat='acc in allAccounts'
-                            value="{{acc.bankId}}">
-                      {{acc.username}}
-                    </option>
-                </select>
+                
+                <div>Code</div>
+                <input id="desc" type="text" ng-model='' />
+
                 <div>To Account</div>
-                <select class='selects' ng-model='makePaymentObj.to.account_id'>
+                <select class='selects' ng-model='toAccount'>
                     <option ng-repeat='payee in payeeAccounts'
                             value="{{payee.party.accountId}}">
                       {{payee.party.name}}
                     </option>
                 </select>
+
                 <div>Amount</div>
-                <input id="amount" type="number" ng-model='makePaymentObj.value.amount' />
-                <div>Description</div>
-                <input id="desc" type="text" ng-model='makePaymentObj.description' />
+                <input id="amount" type="number" ng-model='amount' />
+                
             </fieldset>
             <fieldset id="actions">
                <!--  <button class="button button-full button-positive" ng-click="closeModal()">Move</button> -->
-               <input type="button" id="submit" value="Move" ng-click='moveMoney()'>
+               <input type="button" id="submit" value="Move" ng-click='redeemVoucher()'>
             </fieldset>
         </form>
         <!-- <form class="list" id="redeemVoucher-form6">

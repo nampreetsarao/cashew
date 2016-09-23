@@ -1,3 +1,14 @@
 <ion-view style="" id="page16" title="Profile">
-    <ion-content class="has-header" padding="true"></ion-content>
+    <ion-content class="has-header" padding="true">
+    	 <div class="list leftpadding50 animate-fade-slide-in-right">
+                <ion-list class="" id="profile-list4">
+                    <ion-item style="" id="profile-list-item9" class="item-icon-left">
+                        <i class="icon ion-happy-outline"></i>
+                         {{profile.response.name}} 
+                    </ion-item>
+                    <ion-item style="" id="profile-list-item11" class="item-icon-left  ">
+                        <i class="icon ion-email"></i>{{profile.response.userId}}</ion-item>
+                </ion-list>
+            </div>	
+    </ion-content>
 </ion-view>
