@@ -44,3 +44,29 @@
     transition: opacity 300ms ease-in-out;
     background-color: #000;
     opacity: 0; } }
+
+    /*
+ * http://docs.angularjs.org/api/ng/directive/ngShow#usage_animations
+ */
+.list .item.item-accordion {
+  line-height: 38px;
+  padding-top: 0;
+  padding-bottom: 0;
+  transition: 0.09s all linear;
+}
+.list .item.item-accordion.ng-hide {
+  line-height: 0px;
+}
+.list .item.item-accordion.ng-hide-add,
+.list .item.item-accordion.ng-hide-remove {
+  display: block !important;
+}
+.item-accordion a{
+  border: 0px !important;
+  width: 16px !important;
+  float: right;
+  padding-right: 20px;
+}
+.item-accordion a i{
+  width: 16px;
+}

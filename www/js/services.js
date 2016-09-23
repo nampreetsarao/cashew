@@ -130,7 +130,173 @@ angular.module('app.services', ['app-constants'])
        });
         return deferred.promise;
     };
+
+
+
 })
+
+
+//Reminders  service 
+.service('reminderService', function($state,$http,$q,$ionicLoading,constantService,StorageServiceForToken,$ionicPopup) {
+    var deferred = $q.defer();
+    //service to retrieve the reminders set
+    this.getReminders = function(fromDate, toDate) {
+      $ionicLoading.show(); 
+      var voucherDetails='';
+      var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjI0NTI1LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjAxZWJmYWExLTNjMWQtNGE3Yy1hMTM1LWI1NWM0YjNiNGFkNCIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.H8QKAgLwTGDv_aJMxY_msX_ID6pIHOgB4H0_6LYa6Qs';
+      var oauthData = StorageServiceForToken.getAll();
+      if(oauthData!=null && oauthData.length>0){
+          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      }else{
+        voucherDetails='First authenticate and then make this call.';
+      }
+
+      $http({
+        method: 'GET',
+        url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/reminder',
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': authorizationToken,
+        'fromDate': '2016-10-08T00:00:00.000+0530',
+        'toDate': '2016-10-08T00:00:00.000+0530'
+        }}).then(function(result) {
+          console.log('Success', result); 
+          voucherDetails=result;
+          deferred.resolve(result);
+          $ionicLoading.hide(); 
+           console.log(result);
+       }, function(err) {
+          console.error('ERR', err);
+          $ionicLoading.hide();
+          var alertPopup = $ionicPopup.alert({
+            title: 'Error creating reminder',
+            template:'Error occured while calling the API:'+err+"."
+          });
+       });
+        return deferred.promise;
+    };
+
+  //Create reminder service  
+  this.createReminder = function(reminderObj) {
+      $ionicLoading.show(); 
+      var voucherDetails='';
+      var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjI0NTI1LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjAxZWJmYWExLTNjMWQtNGE3Yy1hMTM1LWI1NWM0YjNiNGFkNCIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.H8QKAgLwTGDv_aJMxY_msX_ID6pIHOgB4H0_6LYa6Qs';
+      var oauthData = StorageServiceForToken.getAll();
+      if(oauthData!=null && oauthData.length>0){
+          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      }else{
+        voucherDetails='First authenticate and then make this call.';
+      }
+
+      $http({
+        method: 'PUT',
+        url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/reminder',
+        data: reminderObj,
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': authorizationToken
+        }}).then(function(result) {
+          console.log('Success', result); 
+          voucherDetails=result;
+          deferred.resolve(result);
+          $ionicLoading.hide(); 
+          var alertPopup = $ionicPopup.alert({
+            title: 'Reminder added sucessfully.',
+            template:'Reminder added sucessfully'
+          });
+           console.log(result);
+       }, function(err) {
+          console.error('ERR', err);
+          $ionicLoading.hide();
+          var alertPopup = $ionicPopup.alert({
+            title: 'Error creating reminder',
+            template:'Error occured while calling the API:'+err+"."
+          });
+       });
+        return deferred.promise;
+    };
+
+
+  //delete reminder 
+  this.deleteReminder = function(reminderId) {
+      $ionicLoading.show(); 
+      var voucherDetails='';
+      var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjI0NTI1LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjAxZWJmYWExLTNjMWQtNGE3Yy1hMTM1LWI1NWM0YjNiNGFkNCIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.H8QKAgLwTGDv_aJMxY_msX_ID6pIHOgB4H0_6LYa6Qs';
+      var oauthData = StorageServiceForToken.getAll();
+      if(oauthData!=null && oauthData.length>0){
+          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      }else{
+        voucherDetails='First authenticate and then make this call.';
+      }
+
+      $http({
+        method: 'DEL',
+        url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/reminder/'+reminderId,
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': authorizationToken
+        }}).then(function(result) {
+          console.log('Success', result); 
+          voucherDetails=result;
+          deferred.resolve(result);
+          $ionicLoading.hide(); 
+          var alertPopup = $ionicPopup.alert({
+            title: 'Reminder deleted sucessfully.',
+            template:'Reminder deleted sucessfully'
+          });
+           console.log(result);
+       }, function(err) {
+          console.error('ERR', err);
+          $ionicLoading.hide();
+          var alertPopup = $ionicPopup.alert({
+            title: 'Error deleting reminder',
+            template:'Error occured while calling the API:'+err+"."
+          });
+       });
+        return deferred.promise;
+    };
+})
+
+
+//Profile service 
+.service('profileService', function($state,$http,$q,$ionicLoading,constantService,StorageServiceForToken,$ionicPopup) {
+    var deferred = $q.defer();
+    //service to generate the voucher
+    this.getProfile = function() {
+      $ionicLoading.show(); 
+      var profileDetails='';
+      var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoidGFubWF5LmFtYnJlQGluLmlibS5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDYwOTY5OCwidXNlck5hbWUiOiJ0YW5tYXkuYW1icmVAaW4uaWJtLmNvbSIsInVzZXJJZCI6InRhbm1heS5hbWJyZUBpbi5pYm0uY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImEzYjlhMDM5LTQyYmMtNGE2OC05OGYyLWVhZjg5YWU5MDllOCIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.EFWGtOgl-2bhyjBYWNQwMVrpwgs2NirzfQ80YZ-Mcmg';
+      var oauthData = StorageServiceForToken.getAll();
+      if(oauthData!=null && oauthData.length>0){
+          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      }else{
+          profileDetails='First authenticate and then make this call.';
+      }
+
+      $http({
+        method: 'GET',
+        url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/profile',
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': authorizationToken,
+        }}).then(function(result) {
+          console.log('Success', result); 
+          profileDetails=result;
+          deferred.resolve(result);
+          $ionicLoading.hide(); 
+          console.log(result);
+       }, function(err) {
+          console.error('ERR', err);
+          $ionicLoading.hide();
+          var alertPopup = $ionicPopup.alert({
+            title: 'Error fetching profile details',
+            template:'Error occured while calling the API:'+JSON.stringify(err)+"."
+          });
+       });
+      return deferred.promise;
+    };
+})
+
 
 //Account and account details Service
 .service('accountTransactionAPI', function($http, $q){
@@ -143,7 +309,7 @@ angular.module('app.services', ['app-constants'])
             headers : {
                'Accept' : 'application/json',
                'Content-Type':'application/json', 
-               'Authorization' : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoidGFubWF5LmFtYnJlQGluLmlibS5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDUyMzc3OSwidXNlck5hbWUiOiJ0YW5tYXkuYW1icmVAaW4uaWJtLmNvbSIsInVzZXJJZCI6InRhbm1heS5hbWJyZUBpbi5pYm0uY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjdlZGY4MTgzLTM5YzItNDcyNy1iMjE2LTgyOWM4M2EwNDUwYSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.N6JvdosxmswXhg7RuFRFHRfQVIdn4fGpNveDc1cghtQ',
+               'Authorization' : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoidGFubWF5LmFtYnJlQGluLmlibS5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDYwOTY5OCwidXNlck5hbWUiOiJ0YW5tYXkuYW1icmVAaW4uaWJtLmNvbSIsInVzZXJJZCI6InRhbm1heS5hbWJyZUBpbi5pYm0uY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImEzYjlhMDM5LTQyYmMtNGE2OC05OGYyLWVhZjg5YWU5MDllOCIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.EFWGtOgl-2bhyjBYWNQwMVrpwgs2NirzfQ80YZ-Mcmg',
                'fromDate' : '2016-01-01T00:00:00.000+0530', 
                'toDate' : '2016-11-01T00:00:00.000+0530'
             },
@@ -269,6 +435,40 @@ angular.module('app.services', ['app-constants'])
         });
     return data;
 })
+
+
+
+// factory for profile
+.factory ('StorageService', function ($localStorage, $window) {
+    $localStorage = $localStorage.$default({
+      profileInformation: []
+    });
+
+    var _getAll = function () {
+      return $localStorage.profileInformation;
+    };
+
+    var _add = function (thing) {
+      $localStorage.profileInformation.push(thing);
+    };
+
+    var _remove = function (thing) {
+      $localStorage.profileInformation.splice($localStorage.profileInformation.indexOf(thing), 1);
+    };
+
+    var _removeAll = function (thing) {
+      //do nothing
+      $window.localStorage.clear();
+    };
+
+    return {
+        getAll: _getAll,
+        add: _add,
+        remove: _remove, 
+        removeAll: _removeAll
+      };
+})
+
 
 // Factory for Storage Service for token (fetching, deleting)
 .factory ('StorageServiceForToken', function ($localStorage) {
