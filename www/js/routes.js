@@ -147,6 +147,18 @@ angular.module('app.routes', [])
     }
   })
 
+
+  .state('menu.subscription', {
+    url: '/page22',
+    views: {
+      'side-menu21': {
+        templateUrl: 'templates/subscription.html',
+        controller: 'subscriptionCtrl'
+      }
+    }
+  })
+
+
   .state('menu.profile', {
     url: '/page16',
     views: {

@@ -1,0 +1,70 @@
+<ion-view style="" id="page22" title="Subscribe" hide-nav-bar="true" hide-back-button="true">
+    <ion-content class="has-header" padding="true">
+        <div style="text-align:center;"><h3 style="color:white;">Subscribe</h3></div>
+        <form class="list" id="signup-form2">
+            <div class="padding errorMsgDiv">
+                <p id="signup-heading1" >{{signupResponse.data.errMsg}}</p>
+                <p id="signup-heading1" >{{signupResponse.errMsg}}</p>
+                
+               <p ng-show="myForm.firstName.$error.required">* Account Id is required</p>
+               <p ng-show="myForm.lastName.$error.required">* Username is required</p>
+              
+            </div>
+            <ion-list id="signup-list2">
+                <label id="signup-input3" class="item item-input">
+                    <span class="input-label">Account Id</span>
+                    <input placeholder="" type="text" ng-model="accountId">
+                </label>
+                <label id="signup-input6" class="item item-input">
+                    <span class="input-label">Username</span>
+                    <input placeholder="" type="text" ng-model="username">
+                </label>
+
+                <br/>
+
+                <label style="color:white;"><b>Self Transaction Range:</b></label>  
+                <div class="range range-positive" >
+                        <i class="icon ion-minus-circled"></i>
+                        <input type="range" min="0" max="500" value="{{selfTxn.min}}" step="5" ng-model="selfTxn.value">
+                        {{selfTxn.value}}
+                        
+                        <i class="icon ion-plus-circled"></i>
+                </div>
+
+                <label style="color:white;"><b>Payee Transaction Range:</b></label>  
+                <div class="range range-positive" >
+                        <i class="icon ion-minus-circled"></i>
+                        <input type="range" min="0" max="500" value="{{payeeTxn.min}}" step="5" ng-model="payeeTxn.value">
+                        {{payeeTxn.value}}
+                       
+                        <i class="icon ion-plus-circled"></i>
+                </div>
+
+
+                <label style="color:white;"><b>Merchant Transaction Range:</b></label>  
+                <div class="range range-positive" >
+                        <i class="icon ion-minus-circled"></i>
+                        <input type="range" min="0" max="500" value="{{merchantTxn.min}}" step="5" ng-model="merchantTxn.value">
+                        {{merchantTxn.value}}
+                        
+                        <i class="icon ion-plus-circled"></i>
+                </div>
+
+                <label style="color:white;"><b>Select a bank:</b></label>
+                <div class="">
+                      <br>
+                      <label>
+                        <input type="radio" value="BARCGB" name="bankId"/>
+                          <img class='radiobuttons' style="width:50px;" src="img/barclays.jpg">
+                      </label>
+                      <label>
+                        <input type="radio" value="IBMGB" name="bankId"/>
+                          <img src="img/ibm.png" style="width:42px;">
+                      </label>
+                </div>  
+
+            </ion-list>
+            <a class="button button-positive  button-block" id="signup-button5" ng-click="subscribe()">Subscribe</a>
+        </form>
+    </ion-content>
+</ion-view>
