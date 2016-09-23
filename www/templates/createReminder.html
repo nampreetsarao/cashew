@@ -1,0 +1,42 @@
+<ion-view style="" id="page21" title="Create Reminder">
+    <ion-content class="has-header" padding="true">
+        <a class="button button-stable button-small icon ion-ios-arrow-back" id="reminders-button35" ui-sref="menu.tiles"></a>
+        <form class="list" id="reminders-form7">
+            <label id="reminders-input15" class="item item-input item-stacked-label">
+                <span class="input-label">Description</span>
+                <input placeholder="Task" type="text" ng-model="description">
+            </label>
+            <label id="reminders-input16" class="item item-input item-stacked-label">
+                <span class="input-label">Date</span>
+                <input placeholder="Date" type="date" ng-model="reminderDate">
+            </label>
+            <label id="reminders-input17" class="item item-input item-stacked-label">
+                <span class="input-label">Time</span>
+                <input placeholder="Time" type="time" ng-model="reminderTime">
+            </label>
+           <!--  <label id="reminders-input17" class="item item-input item-stacked-label">
+                <span class="input-label">Frequency</span>
+                <input placeholder="frequence" type="number" ng-model="frequency">
+            </label> -->
+
+            <ion-checkbox ng-model="isChecked">Is the reminder for Payments?</ion-checkbox>
+            <div ng-if="isChecked">
+                <label id="reminders-input21" class="item item-input item-stacked-label">
+                    <span class="input-label">From Account</span>
+                    <input placeholder="From Account" type="number" ng-model="fromAccount">
+                </label>
+
+                <label id="reminders-input22" class="item item-input item-stacked-label">
+                    <span class="input-label">To Account</span>
+                    <input placeholder="To Account" type="number" ng-model="toAccount">
+                </label>
+                
+                <label id="reminders-input23" class="item item-input item-stacked-label" >
+                    <span class="input-label">Amount</span>
+                    <input placeholder="Amount" type="number" ng-model="amount">
+                </label>
+            </div>
+        </form>
+        <button class="button button-positive  button-block" id="reminders-button36" ng-click="createReminder()">Set</button>
+    </ion-content>
+</ion-view>

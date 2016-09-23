@@ -27,12 +27,11 @@
                     <div class="container_scratch test" id="js-container" >        
                         <canvas class="canvas" id="js-canvas" width="195" height="45"></canvas>
                         <!-- <h4><code><b>{{voucherDetails.data.response.code}}</b></code></h4> -->
-                        <h5><code><b>cashew-5322143</b></code></h5>
+                        <h5><code><b>{{voucherDetails.data.response.code}}</b></code></h5>
                     </div>
                     <br/>
-                    <div style="text-align:center;color:white;"><label>* Voucher is valid till 31st Dec, 2016</label></div>
+                    <div style="text-align:center;color:white;"><label>* Voucher is valid till {{voucherDetails.data.response.expiryDate}}</label></div>
                 </div>
-                
             </div>
         </div>
     <button class="button button-positive  button-block button-clear" id="createVoucher-button31" ng-click="shareVoucher()" ng-show="showVoucher">Share Voucher</button>

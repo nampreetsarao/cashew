@@ -1,36 +1,29 @@
 <ion-view style="" id="page13" title="Reminders" hide-nav-bar="true">
     <ion-content class="has-header" padding="true">
-       <!-- <ion-list>
+        <a class="item item-icon-right" ui-sref="menu.createReminder" >
+                      <i class="icon ion-plus-circled"></i>
+        </a>
+          <ion-list>
             <div ng-repeat="group in groups">
-              <ion-item class="item-stable">
-                  <!-- <i class="icon" ng-class="isGroupShown(group) ? 'ion-minus' : 'ion-plus'"></i> -->
-                <!-- &nbsp;
-                Transaction of: {{group.name}} {{highlightChallenge}}
+              <ion-item class="item-stable"
+                        ng-click="toggleGroup(group)"
+                        ng-class="{active: isGroupShown(group)}">
+                  <i class="icon" ng-class="isGroupShown(group) ? 'ion-minus' : 'ion-plus'"> </i>
+                &nbsp;
+                {{group.description}}: {{group.reminderDate | date:'dd-M-yyyy'}}
               </ion-item>
-
-              <ion-item class="item-accordion"
-                       >
-               
-               </ion-item> 
-
               <ion-item class="item-accordion" ng-show="isGroupShown(group)">
-               <button id="makeAPayment-button4" class=" button button-positive  button-block " ng-click="answerChallenge('{{group.challengeId[0]}}', '{{group.challengeType[0]}}','{{group.transactionId[0]}}')" >Answer Challenge</button> 
+                    <a class="item item-icon-right" ng-click="deleteReminder('{{group.id}}')">
+                      <i class="icon ion-trash-a"></i>
+                    </a>
+                    <a class="item item-icon-right" ng-click="updateReminder('{{group}}')">
+                      <i class="icon ion-edit"></i>
+                    </a>
+                  Date: {{group.reminderDate | date:'dd-M-yyyy'}}
+                 <button id="makeAPayment-button4" class=" button button-positive  button-block " ng-click="" ng-if="group.amount">Make a Payment</button> 
               </ion-item>
-
-            </div> 
-     </ion-list>  - -->->
-
-     <div class="card">
-        <div class="item item-divider">
-          Reminder
-        </div>
-        <div class="item item-text-wrap">
-          This is a basic Card with some text.
-        </div>
-        <div class="item item-divider">
-          <button id="makeAPayment-button4" class=" button button-positive  button-block " ng-click="answerChallenge('{{group.challengeId[0]}}', '{{group.challengeType[0]}}','{{group.transactionId[0]}}')" >Pay</button> 
-        </div>
-      </div>
+            </div>
+          </ion-list>
 
     </ion-content>
 </ion-view>

@@ -107,10 +107,21 @@ angular.module('app.routes', [])
   })
 
   .state('menu.reminders', {
-    url: '/page13',
+    url: '/page21',
     views: {
       'side-menu21': {
         templateUrl: 'templates/reminders.html',
+        controller: 'remindersCtrl'
+      }
+    }
+  })
+
+
+  .state('menu.createReminder', {
+    url: '/page13',
+    views: {
+      'side-menu21': {
+        templateUrl: 'templates/createReminder.html',
         controller: 'remindersCtrl'
       }
     }

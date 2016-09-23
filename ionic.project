@@ -1,4 +1,10 @@
 {
   "name": "cashew",
-  "app_id": ""
+  "app_id": "",
+  "proxies": [
+    {
+    "path": "/user",
+    "proxyUrl": "http://inmbz2239.in.dst.ibm.com:8084/bigoauth2server/user"
+    }
+  ]
 }
