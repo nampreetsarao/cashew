@@ -35,7 +35,7 @@
 				// hold on to it
 				clearTimeout(deferTimer);
 				deferTimer = setTimeout(function () {
-					last = now;
+					last = now; 
 					fn.apply(context, args);
 				}, threshhold);
 			} else {

@@ -39,9 +39,9 @@ body {
 	font-size: 2em;
 	display: inline-block;
 	margin: 0.2em 0.1em;
-	padding-top: 2.25em;
-	width: 5.5em;
-	height: 5.5em;
+	/*padding-top: 2.25em;*/
+	width: 6.5em;
+	height: 6.5em;
 	border-radius: 4px;
 	background: #403E45;
 	color: #76737C;

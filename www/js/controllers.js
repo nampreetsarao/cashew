@@ -455,14 +455,19 @@
 
   }])
      
- .controller('moveMoneyCtrl', ['$scope', '$stateParams', '$ionicModal', 'getAllAccountsDetailsService', 'accountTransactionAPI', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+ .controller('moveMoneyCtrl', ['$scope', '$stateParams', '$ionicModal', 'getAllAccountsDetailsService', 'accountTransactionAPI', '$ionicLoading', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, accountTransactionAPI) {
+function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, accountTransactionAPI, $ionicLoading) {
 
 
     $scope.allAccounts = {};
     $scope.payeeAccounts = {};
+
+    $scope.fromAcc = "";
+    $scope.toAcc = "";
+    $scope.toAccId = "";
+    $scope.type = "";
       //calling all Accounts    
 
       var accPromise = getAllAccountsDetailsService.getAllAccounts();
@@ -473,9 +478,10 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
           //Create
           for(var idx=0;idx<$scope.allAccounts.length;idx++){
               var acc = $scope.allAccounts[idx];
-              var elem = "<div class='grid__item' ><i class='fa fa-fw fa-image'></i>"+
-                              "<label>"+acc.bankId+"</label><br/>"+
-                              "<label>"+acc.balance.amount+"</label>"+
+              var elem = "<div class='grid__item'><i class='fa fa-fw fa-image'></i>"+
+                              "<label data='"+acc.id+"' style='color:white;'><b>"+acc.bankId+"</b></label><br/>"+
+                              "<label data='"+acc.id+"'>("+acc.id+")</label><br/>"+
+                              "<label>Balance: "+acc.balance.amount+"</label>"+
                             "</div>";
               elements = elements + elem;
           }
@@ -496,10 +502,6 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
       classie.remove( popup, 'show' );  
   };
 
-
-    
-
-
     $scope.closeModal = function() {
       $scope.modal.hide();
     };
@@ -518,22 +520,25 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
   $scope.fromAcc = "";
   $scope.makePaymentObj = {
                             "to":{
-                                "bankId":"",
-                                  "accountId":""
+                                  "bankId": $scope.toAcc,
+                                  "accountId": ""
                               },  
                             "value":{
-                                "currency":"",
+                                "currency":"GBP",
                                 "amount":""
                               },
                             "description":"",
 
-                             "transactionRequestType": ""
+                             "transactionRequestType": $scope.type
                         } ;
 
 
   $scope.moveMoney = function(){
-     accountTransactionAPI.createTransactionRequest(fromAcc, $scope.makePaymentObj);
-     $scope.modal.remove();
+    $scope.modal.remove();
+    $scope.makePaymentObj.to.accountId = $scope.toAccId;
+    $scope.makePaymentObj.to.bankId = $scope.toAcc;
+    $scope.makePaymentObj.transactionRequestType = $scope.type;
+    accountTransactionAPI.createTransactionRequest($scope.fromAcc, $scope.makePaymentObj);   
   };
 
   $scope.initiateDragNDrop = function(){
@@ -542,6 +547,7 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
     var dropArea = document.getElementById( 'drop-area' );
     var droppableArr = [];
     var dropAreaTimeout;
+
     classie.add( dropArea, 'show' );
       //** Drag-n-Drop functionality **//
     // initialize droppables
@@ -551,9 +557,15 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
             onDrop : function( instance, draggableEl ) {
               // show checkmark inside the droppabe element
               classie.add( instance.el, 'drop-feedback' );
-              clearTimeout( instance.checkmarkTimeout );
-              $scope.elem = $(instance.el);
               $(instance.el).toggleClass("clicked");
+              clearTimeout( instance.checkmarkTimeout );
+              $scope.toAcc = $scope.elem = $($(instance.el).children()[0]).attr('data');              
+              $scope.toAccId = $($(instance.el).children()[1]).attr("data");
+              $scope.type = $(instance.el).attr("data");
+
+
+              $scope.fromAcc = $($(draggableEl).children()[1]).attr('data');
+              $scope.elem = $(instance.el);
               instance.checkmarkTimeout = setTimeout( function() { 
                 classie.remove( instance.el, 'drop-feedback' );
               }, 800 );
@@ -567,7 +579,7 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
         [].slice.call(document.querySelectorAll( '#grid .grid__item' )).forEach( function( el ) {
           new Draggable( el, droppableArr, {
             draggabilly : { containment: document.body },
-            onStart : function() {
+            onStart : function(el) {
               // add class 'drag-active' to body
               classie.add( body, 'drag-active' );
               // clear timeout: dropAreaTimeout (toggle drop area)
@@ -583,6 +595,8 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
                 classie.remove( body, 'drag-active' );
                 $($scope.elem).removeClass("clicked");
 
+                $scope.makePaymentObj.value.amount = '';
+                $scope.makePaymentObj.description = '';
                 //Payment popup
                 $ionicModal.fromTemplateUrl('my-modal.html', {
                   scope: $scope,

@@ -57,7 +57,7 @@ angular.module('app.services', ['app-constants'])
 
 
 //Create Voucher service 
-.service('voucherService', function($state,$http,$q,$ionicLoading,constantService,StorageServiceForToken,$ionicPopup) {
+.service('voucherService', function($state,$http,$q,$ionicLoading,constantService,StorageServiceForToken,$ionicPopup, $ionicLoading) {
     var deferred = $q.defer();
     //service to generate the voucher
     this.createVoucher = function(voucherObj) {
@@ -133,7 +133,7 @@ angular.module('app.services', ['app-constants'])
 })
 
 //Account and account details Service
-.service('accountTransactionAPI', function($http, $q){
+.service('accountTransactionAPI', function($http, $q, $ionicPopup, $ionicLoading){
   //specific account details chart
   this.accountTransactionDistribution = function(){
     return $q(function(resolve, reject){
@@ -228,7 +228,7 @@ angular.module('app.services', ['app-constants'])
 
   this.createTransactionRequest = function(fromAcc, makePaymentObj){
       $ionicLoading.show(); 
-      $http.post("http://"+constantService.server+':'+constantService.port+constantService.baseURL+"/iceman@gmail.com/IBMGB/"+fromAcc+"/payment", makePaymentObj, {
+      $http.post("http://inmbz2239.in.dst.ibm.com:8085/cashewapi/iceman@gmail.com/IBMGB/"+fromAcc+"/payment", makePaymentObj, {
         }).success(function(responseData) {
             //do stuff with response
             $ionicLoading.hide();
@@ -237,7 +237,13 @@ angular.module('app.services', ['app-constants'])
             title: 'Make a Payment',
             template:'Transaction successfully submitted.'
           });
+        }).failure(function(responseData) {
+            //do stuff with response
+            $ionicLoading.hide();
+            console.log('Error', responseData);
+            
         });
+        $ionicLoading.hide();
     };
 
 
@@ -260,7 +266,7 @@ angular.module('app.services', ['app-constants'])
         allAccountDetails='First authenticate and then make this call.';
       }
       //$http.defaults.headers.common.Authorization=authorizationToken;
-      $http.defaults.headers.common.Authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjI4NDI0LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImY0YzkwYTZkLWI4ZjMtNGNlYi04ZGMxLTM0MTFmMjM4YThiYyIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.MP8bJ1HxzqlQSvuYiBkkDhar93pySsKTRYQQKyZ5nMk';
+      $http.defaults.headers.common.Authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjQ2MjcxLCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImUyOGVhMTg0LWI3ZjAtNGRkYi1iYzdjLTY5MmRmZDFkNWYyMCIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.nt3y5-FaLiKXyiRHcHs_Wq8am0W_gV5VIY_ycXmjAUI';
       //alert('http://'+constantService.server+':'+constantService.port+'/psd2api/my/banks/BARCGB/accounts');
       $http.get('http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/iceman@gmail.com/accounts').then(function(resp){
           console.log('Success', resp); // JSON object
@@ -292,7 +298,7 @@ angular.module('app.services', ['app-constants'])
         allAccountDetails='First authenticate and then make this call.';
       }
       //$http.defaults.headers.common.Authorization=authorizationToken;
-      $http.defaults.headers.common.Authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjI4NDI0LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImY0YzkwYTZkLWI4ZjMtNGNlYi04ZGMxLTM0MTFmMjM4YThiYyIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.MP8bJ1HxzqlQSvuYiBkkDhar93pySsKTRYQQKyZ5nMk';
+      $http.defaults.headers.common.Authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjQ2MjcxLCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImUyOGVhMTg0LWI3ZjAtNGRkYi1iYzdjLTY5MmRmZDFkNWYyMCIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.nt3y5-FaLiKXyiRHcHs_Wq8am0W_gV5VIY_ycXmjAUI';
       //alert('http://'+constantService.server+':'+constantService.port+'/psd2api/my/banks/BARCGB/accounts');
       $http.get('http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/iceman@gmail.com/IBMGB/7278/payees').then(function(resp){
           console.log('Success', resp); // JSON object
@@ -316,7 +322,7 @@ angular.module('app.services', ['app-constants'])
     this.getReminders = function() {
       $ionicLoading.show(); 
       var voucherDetails='';
-      var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoidGFubWF5LmFtYnJlQGluLmlibS5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDU1NDcyMCwidXNlck5hbWUiOiJ0YW5tYXkuYW1icmVAaW4uaWJtLmNvbSIsInVzZXJJZCI6InRhbm1heS5hbWJyZUBpbi5pYm0uY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6Ijk5ZjIzYWE1LTE5MWMtNGI0Zi04NzcxLWQ3ZTY0Nzk1YzRhZSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.sFm3uBrD0bv_qb2dCFPgDwz24w5-LLAS2znzTmracr8';
+      var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjQ2MjcxLCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImUyOGVhMTg0LWI3ZjAtNGRkYi1iYzdjLTY5MmRmZDFkNWYyMCIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.nt3y5-FaLiKXyiRHcHs_Wq8am0W_gV5VIY_ycXmjAUI';
       var oauthData = StorageServiceForToken.getAll();
       if(oauthData!=null && oauthData.length>0){
           authorizationToken = 'Bearer '+ oauthData[0].access_token;
