@@ -1,9 +1,20 @@
   angular.module('app.controllers', [])
     
-  .controller('tilesCtrl', ['$scope', '$stateParams', '$state', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+  .controller('tilesCtrl', ['$scope', '$stateParams', '$state', 'getAllAccountsDetailsService', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
   // You can include any angular dependencies as parameters for this function
   // TIP: Access Route Parameters for your page via $stateParams.parameterName
-  function ($scope, $stateParams, $state) {
+  function ($scope, $stateParams, $state, getAllAccountsDetailsService) {
+
+   
+   $scope.allAccounts = {};
+      //calling all Accounts    
+
+      var promise = getAllAccountsDetailsService.getAllAccounts();
+      promise.then(function(data) {
+          $scope.allAccounts = data;
+      });
+
+
 
   	$scope.total = "1,50,000";
 
@@ -444,10 +455,41 @@
 
   }])
      
- .controller('moveMoneyCtrl', ['$scope', '$stateParams', '$ionicModal',  // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+ .controller('moveMoneyCtrl', ['$scope', '$stateParams', '$ionicModal', 'getAllAccountsDetailsService', 'accountTransactionAPI', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
 // You can include any angular dependencies as parameters for this function
 // TIP: Access Route Parameters for your page via $stateParams.parameterName
-function ($scope, $stateParams,  $ionicModal) {
+function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, accountTransactionAPI) {
+
+
+    $scope.allAccounts = {};
+    $scope.payeeAccounts = {};
+      //calling all Accounts    
+
+      var accPromise = getAllAccountsDetailsService.getAllAccounts();
+      accPromise.then(function(data) {
+          $scope.allAccounts = data.data.response;
+
+          var elements = "";
+          //Create
+          for(var idx=0;idx<$scope.allAccounts.length;idx++){
+              var acc = $scope.allAccounts[idx];
+              var elem = "<div class='grid__item' ><i class='fa fa-fw fa-image'></i>"+
+                              "<label>"+acc.bankId+"</label><br/>"+
+                              "<label>"+acc.balance.amount+"</label>"+
+                            "</div>";
+              elements = elements + elem;
+          }
+          $("#grid").html(elements);
+          console.log($scope.allAccounts[0].bankId +", "+$scope.allAccounts[0].balance.amount);
+          $scope.initiateDragNDrop();
+      });
+  
+  // Get All Payee Accounts
+    var payeePromise = getAllAccountsDetailsService.getPayeeAccounts();
+      payeePromise.then(function(data) {
+          $scope.payeeAccounts = data.data.response;
+          console.log($scope.payeeAccounts[0].source.bankId);
+      });
 
   $scope.callitgo = function(){
       var popup = document.getElementById( 'popup-area' );
@@ -455,16 +497,12 @@ function ($scope, $stateParams,  $ionicModal) {
   };
 
 
-    var body = document.body;
-    var dropArea = document.getElementById( 'drop-area' );
-    var droppableArr = [];
-    var dropAreaTimeout;
-    classie.add( dropArea, 'show' );
+    
 
 
     $scope.closeModal = function() {
-    $scope.modal.hide();
-  };
+      $scope.modal.hide();
+    };
   //Cleanup the modal when we're done with it!
   $scope.$on('$destroy', function() {
     $scope.modal.remove();
@@ -477,28 +515,35 @@ function ($scope, $stateParams,  $ionicModal) {
   $scope.$on('modal.removed', function() {
     // Execute action
   });
+  $scope.fromAcc = "";
+  $scope.makePaymentObj = {
+                            "to":{
+                                "bankId":"",
+                                  "accountId":""
+                              },  
+                            "value":{
+                                "currency":"",
+                                "amount":""
+                              },
+                            "description":"",
+
+                             "transactionRequestType": ""
+                        } ;
+
 
   $scope.moveMoney = function(){
+     accountTransactionAPI.createTransactionRequest(fromAcc, $scope.makePaymentObj);
      $scope.modal.remove();
   };
 
-$scope.makePaymentObj = {
-          "type": "",
-          "from": {
-              "bank_id": "",
-              "account_id": ""
-          },
-          "to":{
-              "bank_id":"",
-              "account_id":""
-            },  
-          "value":{
-              "currency":"GBP",
-              "amount":""
-            },
-          "description":""
-      };
-  //** Drag-n-Drop functionality **//
+  $scope.initiateDragNDrop = function(){
+
+    var body = document.body;
+    var dropArea = document.getElementById( 'drop-area' );
+    var droppableArr = [];
+    var dropAreaTimeout;
+    classie.add( dropArea, 'show' );
+      //** Drag-n-Drop functionality **//
     // initialize droppables
         [].slice.call( document.querySelectorAll( '#drop-area .drop-area__item' )).forEach( function( el ) {
           droppableArr.push( new Droppable( el, {
@@ -563,6 +608,9 @@ $scope.makePaymentObj = {
             }
           } );
         } );
+  }
+
+  
 }])
 
      
@@ -571,6 +619,8 @@ $scope.makePaymentObj = {
     j.type = 'text/javascript';
     j.src = 'lib/scratchcard/scratchcard.js';
     document.getElementsByTagName('head')[0].appendChild(j);
+
+    $scope.showVoucher=true;
 
     // ScratchCard(document.getElementById('sceatchable'));
     $scope.voucherDetails={};
@@ -633,6 +683,7 @@ $scope.makePaymentObj = {
       voucherService.redeemVoucher(redeemVoucherObj);
     }
   })
+
 
   .controller('remindersCtrl', function ($scope, $stateParams,$state, reminderService, $ionicPopup) {
       
@@ -704,14 +755,57 @@ $scope.makePaymentObj = {
         $state.go('menu.createReminder');
 
       }
-
-  })
+  }])
      
   .controller('insightsCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
   // You can include any angular dependencies as parameters for this function
   // TIP: Access Route Parameters for your page via $stateParams.parameterName
   function ($scope, $stateParams) {
 
+      var pics = ['img/insight1.jpg', 'img/insight2.jpg', 'img/insight3.jpg', 'img/insight4.jpg', 'img/insight5.jpg'];
+
+          var cardTypes = [{
+            title: 'Insight1',
+            desc: 'details of Insight1',
+            image: pics[Math.floor(Math.random()*pics.length)]
+          }, {
+            title: 'Insight2',
+            desc: 'details of Insight2',
+            image: pics[Math.floor(Math.random()*pics.length)]
+          }, {
+            title: 'Insight3',
+            desc: 'details of Insight3',
+            image: pics[Math.floor(Math.random()*pics.length)]
+          }, {
+            title: 'Insight4',
+            desc: 'details of Insight4',
+            image: pics[Math.floor(Math.random()*pics.length)]
+          }, {
+            title: 'Insight5',
+            desc: 'details of Insight5',
+            image: pics[Math.floor(Math.random()*pics.length)]
+          }];
+
+          $scope.cards = Array.prototype.slice.call(cardTypes, 0, 0);
+
+          $scope.cardSwiped = function(index) {
+            $scope.addCard();
+          };
+
+          $scope.cardDestroyed = function(index) {
+            $scope.cards.splice(index, 1);
+          };
+
+          $scope.addCard = function() {
+            var newCard = cardTypes[Math.floor(Math.random() * cardTypes.length)];
+            newCard.id = Math.random();
+            $scope.cards.push(angular.extend({}, newCard));
+          }
+
+           $scope.goAway = function() {
+            var card = $ionicSwipeCardDelegate.getSwipeableCard($scope);
+            card.swipe();
+          };
 
   }])
      

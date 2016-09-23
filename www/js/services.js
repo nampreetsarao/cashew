@@ -35,8 +35,8 @@ angular.module('app.services', ['app-constants'])
       }else{
         allAccountDetails='First authenticate and then make this call.';
       }
-      $http.defaults.headers.common.Authorization=authorizationToken;
-      //$http.defaults.headers.common.Authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Njc4OTUzODQsInVzZXJfbmFtZSI6Im5zaW5naCIsImF1dGhvcml0aWVzIjpbIlVTRVIiXSwianRpIjoiMTExMWRhNzMtMWY3ZC00NDA1LTk3ZDEtM2FjNGNiNmM5MzllIiwiY2xpZW50X2lkIjoicG9zdG1hbiIsInNjb3BlIjpbIndyaXRlIl19.XtM6MjWkbVlaudZRWXHvTlhpzTU9Q64qF7UdR-BB5Zs';
+      //$http.defaults.headers.common.Authorization=authorizationToken;
+      $http.defaults.headers.common.Authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Njc4OTUzODQsInVzZXJfbmFtZSI6Im5zaW5naCIsImF1dGhvcml0aWVzIjpbIlVTRVIiXSwianRpIjoiMTExMWRhNzMtMWY3ZC00NDA1LTk3ZDEtM2FjNGNiNmM5MzllIiwiY2xpZW50X2lkIjoicG9zdG1hbiIsInNjb3BlIjpbIndyaXRlIl19.XtM6MjWkbVlaudZRWXHvTlhpzTU9Q64qF7UdR-BB5Zs';
       //alert('http://'+constantService.server+':'+constantService.port+'/psd2api/my/banks/BARCGB/accounts');
       $http.get('http://'+constantService.server+':'+constantService.port+'/psd2api/my/banks/BARCGB/accounts').then(function(resp){
           console.log('Success', resp); // JSON object
@@ -338,7 +338,7 @@ angular.module('app.services', ['app-constants'])
   this.accountTransactions = function(){
     return $q(function(resolve, reject){
       var req = {
-          url: 'http://inmbz2239.in.dst.ibm.com:8085/cashewapi/tanmay.ambre@in.ibm.com/IBMGB/6111/transactions',
+          url: 'http://inmbz2239.in.dst.ibm.com:8085/cashewapi/iceman@gmail.com/IBMGB/7278/transactions',
             method:'GET',
             headers : {
                'Accept' : 'application/json',
@@ -391,8 +391,171 @@ angular.module('app.services', ['app-constants'])
           });
     });
   }
+
+  this.createTransactionRequest = function(fromAcc, makePaymentObj){
+      $ionicLoading.show(); 
+      $http.post("http://"+constantService.server+':'+constantService.port+constantService.baseURL+"/iceman@gmail.com/IBMGB/"+fromAcc+"/payment", makePaymentObj, {
+        }).success(function(responseData) {
+            //do stuff with response
+            $ionicLoading.hide();
+            console.log('Success', responseData);
+            var alertPopup = $ionicPopup.alert({
+            title: 'Make a Payment',
+            template:'Transaction successfully submitted.'
+          });
+        });
+    };
+
+
 })
 
+//get All Account details service
+.service('getAllAccountsDetailsService', function($state,$http,$q,$ionicLoading,constantService,StorageServiceForToken,$ionicPopup) {
+    
+
+    //to fetch all acounts
+    var accDeferred = $q.defer();
+    this.getAllAccounts = function() {
+      $ionicLoading.show(); 
+      var allAccountDetails=[];
+      var authorizationToken = '';
+      var oauthData = StorageServiceForToken.getAll();
+      if(oauthData!=null && oauthData.length>0){
+          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      }else{
+        allAccountDetails='First authenticate and then make this call.';
+      }
+      //$http.defaults.headers.common.Authorization=authorizationToken;
+      $http.defaults.headers.common.Authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjI4NDI0LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImY0YzkwYTZkLWI4ZjMtNGNlYi04ZGMxLTM0MTFmMjM4YThiYyIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.MP8bJ1HxzqlQSvuYiBkkDhar93pySsKTRYQQKyZ5nMk';
+      //alert('http://'+constantService.server+':'+constantService.port+'/psd2api/my/banks/BARCGB/accounts');
+      $http.get('http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/iceman@gmail.com/accounts').then(function(resp){
+          console.log('Success', resp); // JSON object
+          //allAccountDetails=resp;
+          accDeferred.resolve(resp);
+          $ionicLoading.hide(); 
+        }, function(err){
+          console.error('ERR', err);
+          $ionicLoading.hide();
+          var alertPopup = $ionicPopup.alert({
+            title: 'Show all accounts: Alert',
+            template:'Error occured while calling the API:'+err
+          });
+        });
+        return accDeferred.promise;
+    };
+
+
+        //to fetch all payees acounts
+    var payeeDeferred = $q.defer();
+    this.getPayeeAccounts = function() {
+      $ionicLoading.show(); 
+      var allAccountDetails=[];
+      var authorizationToken = '';
+      var oauthData = StorageServiceForToken.getAll();
+      if(oauthData!=null && oauthData.length>0){
+          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      }else{
+        allAccountDetails='First authenticate and then make this call.';
+      }
+      //$http.defaults.headers.common.Authorization=authorizationToken;
+      $http.defaults.headers.common.Authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjI4NDI0LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImY0YzkwYTZkLWI4ZjMtNGNlYi04ZGMxLTM0MTFmMjM4YThiYyIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.MP8bJ1HxzqlQSvuYiBkkDhar93pySsKTRYQQKyZ5nMk';
+      //alert('http://'+constantService.server+':'+constantService.port+'/psd2api/my/banks/BARCGB/accounts');
+      $http.get('http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/iceman@gmail.com/IBMGB/7278/payees').then(function(resp){
+          console.log('Success', resp); // JSON object
+          //allAccountDetails=resp;
+          payeeDeferred.resolve(resp);
+          $ionicLoading.hide(); 
+        }, function(err){
+          console.error('ERR', err);
+          $ionicLoading.hide();
+          var alertPopup = $ionicPopup.alert({
+            title: 'Show all accounts: Alert',
+            template:'Error occured while calling the API:'+err
+          });
+        });
+        return payeeDeferred.promise;
+    };
+
+
+    var reminderDeferred = $q.defer();
+    //service to generate the voucher
+    this.getReminders = function() {
+      $ionicLoading.show(); 
+      var voucherDetails='';
+      var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoidGFubWF5LmFtYnJlQGluLmlibS5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDU1NDcyMCwidXNlck5hbWUiOiJ0YW5tYXkuYW1icmVAaW4uaWJtLmNvbSIsInVzZXJJZCI6InRhbm1heS5hbWJyZUBpbi5pYm0uY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6Ijk5ZjIzYWE1LTE5MWMtNGI0Zi04NzcxLWQ3ZTY0Nzk1YzRhZSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.sFm3uBrD0bv_qb2dCFPgDwz24w5-LLAS2znzTmracr8';
+      var oauthData = StorageServiceForToken.getAll();
+      if(oauthData!=null && oauthData.length>0){
+          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      }else{
+        voucherDetails='First authenticate and then make this call.';
+      }
+
+      $http({
+        method: 'GET',
+        url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/tanmay.ambre@in.ibm.com/accounts',// (http://%27+constantService.server+%27:%27+constantService.port+constantService.baseURL+%27/reminder%27) ,
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': authorizationToken
+        }}).then(function(result) {
+          console.log('Success', result); 
+          voucherDetails=result;
+          reminderDeferred.resolve(result);
+          $ionicLoading.hide(); 
+           console.log(result);
+       }, function(err) {
+          console.error('ERR', err);
+          $ionicLoading.hide();
+          var alertPopup = $ionicPopup.alert({
+            title: 'Error fetching get all accounts',
+            template:'Error occured while calling the API:'+JSON.stringify(err)+"."
+          });
+       });
+        return reminderDeferred.promise;
+    };
+
+})
+
+//get All Account details service
+.service('remindersService', function($state,$http,$q,$ionicLoading,constantService,StorageServiceForToken,$ionicPopup) {  
+
+
+    var deferred = $q.defer();
+    //service to generate the voucher
+    this.getAllReminders = function() {
+      $ionicLoading.show(); 
+      var voucherDetails='';
+      var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoidGFubWF5LmFtYnJlQGluLmlibS5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDU1NDcyMCwidXNlck5hbWUiOiJ0YW5tYXkuYW1icmVAaW4uaWJtLmNvbSIsInVzZXJJZCI6InRhbm1heS5hbWJyZUBpbi5pYm0uY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6Ijk5ZjIzYWE1LTE5MWMtNGI0Zi04NzcxLWQ3ZTY0Nzk1YzRhZSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.sFm3uBrD0bv_qb2dCFPgDwz24w5-LLAS2znzTmracr8';
+      var oauthData = StorageServiceForToken.getAll();
+      if(oauthData!=null && oauthData.length>0){
+          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      }else{
+        voucherDetails='First authenticate and then make this call.';
+      }
+
+      $http({
+        method: 'GET',
+        url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/reminder',// (http://%27+constantService.server+%27:%27+constantService.port+constantService.baseURL+%27/reminder%27) ,
+        headers: {
+        'Content-Type': 'application/json',
+        'Authorization': authorizationToken
+        }}).then(function(result) {
+          console.log('Success', result); 
+          voucherDetails=result;
+          deferred.resolve(result);
+          $ionicLoading.hide(); 
+           console.log(result);
+       }, function(err) {
+          console.error('ERR', err);
+          $ionicLoading.hide();
+          var alertPopup = $ionicPopup.alert({
+            title: 'Error fetching get all accounts',
+            template:'Error occured while calling the API:'+JSON.stringify(err)+"."
+          });
+       });
+        return deferred.promise;
+    };
+
+})
 // //Factory for Voucher services
 // .factory('VoucherService', function($resource, constantService){
 //     var data = $resource('http://'+constantService.server+':'+constantService.port+constantService.baseURL+constantService.baseURLForOAuth+'/vocher' , {}, {

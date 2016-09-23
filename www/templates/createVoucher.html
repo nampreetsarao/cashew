@@ -1,6 +1,7 @@
-<ion-view style="" id="page11" title="Create Voucher">
-    <ion-content class="has-header" padding="true" scroll="false">
-        <a class="button button-stable button-small icon ion-ios-arrow-back" id="createVoucher-button29" ui-sref="menu.tiles"></a>
+<ion-view style="" id="page11" title="Create Voucher" hide-nav-bar="true">
+    <ion-content scroll="false">
+        <h1 style="color:white;">Create Voucher</h1>
+        <!-- <a class="button button-stable button-small icon ion-ios-arrow-back" id="createVoucher-button29" ui-sref="menu.tiles"></a> -->
         <form class="list" id="createVoucher-form5">
             <label id="createVoucher-input11" class="item item-input">
                 <span class="input-label">Amount</span>
@@ -18,18 +19,21 @@
         <button class="button button-positive  button-block" id="createVoucher-button30" ng-click="createVoucher()">Create</button>
         <br/>
 
-        <div class="vCard" ng-show="showVoucher">
+        <div class="vCard effect8" ng-show="showVoucher">
             <div class="vvCard">
-                <div style='text-align: center'><h4 style="color:white;">Voucher</h4></div>        
-                <div class="container_scratch" id="js-container" >        
-                    <canvas class="canvas" id="js-canvas" width="195" height="45"></canvas>
-                    <h4><code><b>{{voucherDetails.data.response.code}}</b></code></h4>
+                <div class="labelCashew"><h4 style="color:white;">CASHEW</h4></div>    
+                <div class="vbg">    
+                    <br/>
+                    <div class="container_scratch test" id="js-container" >        
+                        <canvas class="canvas" id="js-canvas" width="195" height="45"></canvas>
+                        <!-- <h4><code><b>{{voucherDetails.data.response.code}}</b></code></h4> -->
+                        <h5><code><b>{{voucherDetails.data.response.code}}</b></code></h5>
+                    </div>
+                    <br/>
+                    <div style="text-align:center;color:white;"><label>* Voucher is valid till {{voucherDetails.data.response.expiryDate}}</label></div>
                 </div>
-                <br/>
             </div>
         </div>
-        <br/>
-
     <button class="button button-positive  button-block button-clear" id="createVoucher-button31" ng-click="shareVoucher()" ng-show="showVoucher">Share Voucher</button>
     </ion-content>
 </ion-view>       

@@ -1,5 +1,30 @@
-<ion-view style="" id="page14" title="Insights">
+<ion-view style="" id="page14" title="Insights" hide-nav-bar="true">
     <ion-content class="has-header" padding="true">
-        <a class="button button-stable button-small icon ion-ios-arrow-back" id="insights-button37" ui-sref="menu.tiles"></a>
+        <ion-pane>
+		    <ion-header-bar class="bar-transparent">
+		        <h1 class="title">Insights</h1>
+		      </ion-header-bar>
+
+		    <swipe-cards>
+		      <swipe-card on-card-swipe="cardSwiped()" id="start-card">
+		        Swipe down for new Insights
+		      </swipe-card>
+		      <swipe-card class='effect1' ng-repeat="card in cards" on-destroy="cardDestroyed($index)" on-card-swipe="cardSwiped($index)">
+		        <div>
+		          <div class="title">
+		            {{card.title}}
+		          </div>
+		          <div class="image">
+		            <img ng-src="{{card.image}}">
+		          </div>
+		          <div class="button-bar">
+		            <!-- <button class="button button-clear button-positive" ng-click="goAway()">Answer</button>
+		            <button class="button button-clear button-positive" ng-click="goAway()">Decline</button> -->
+		             {{card.desc}}
+		          </div>
+		        </div>
+		      </swipe-card>
+		    </swipe-cards>
+		  </ion-pane>
     </ion-content>
 </ion-view>
