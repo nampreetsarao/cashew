@@ -50,7 +50,6 @@
     background-color: #000;
     opacity: 0; } }
 
-<<<<<<< HEAD
     /*
  * http://docs.angularjs.org/api/ng/directive/ngShow#usage_animations
  */
@@ -76,11 +75,9 @@
 .item-accordion a i{
   width: 16px;
 }
-=======
-    .qrScan{
+.qrScan{
           width: 32px;
     float: right;
     margin-right: 8%;
     cursor: pointer;
-    }
->>>>>>> 18e8a45d077255bfef66fe158f9d4fdb59ebb6c5
+}

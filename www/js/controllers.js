@@ -117,7 +117,7 @@
       $scope.loginOAuth =  function(){
         // cordova.InAppBrowser
       var ref =cordova.InAppBrowser.open('http://inmbz2239.in.dst.ibm.com:8084/bigoauth2server/oauth/authorize?client_id=4a4b0281-49b1-4533-b3ac-eee11f1f6bd8&redirect_uri=http://localhost/callback&scope=read&response_type=code', '_blank', 'location=no,clearsessioncache=yes,clearcache=yes,toolbar=yes');
-      ref.addEventListener('onload', function(event) {
+      ref.addEventListener('loadstart', function(event) {
       //alert('event url'+event.url);
       if ((event.url).startsWith("http://localhost/callback")) {
             $scope.requestToken = (event.url).split("code=")[1];
@@ -620,8 +620,6 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
     j.src = 'lib/scratchcard/scratchcard.js';
     document.getElementsByTagName('head')[0].appendChild(j);
 
-    $scope.showVoucher=true;
-
     // ScratchCard(document.getElementById('sceatchable'));
     $scope.voucherDetails={};
     $scope.shareVoucher =  function(){
@@ -755,7 +753,7 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
         $state.go('menu.createReminder');
 
       }
-  }])
+  })
      
   .controller('insightsCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
   // You can include any angular dependencies as parameters for this function
