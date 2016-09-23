@@ -1,39 +1,22 @@
 <ion-view style="" id="page10" title="Move Money" hide-nav-bar="true" class='movemoneybg'>
-    <ion-content class="has-header" padding="true">
+    <ion-content>
         <div class="container" style="text-align:center;">
 			<h1 style="color:white;">Move Money</h1>
 			<div class="content">
+				<div><img class="qrScan" src="img/qr_code.png"/></div>
 				<div id="grid" class="grid clearfix">
-					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
-					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
-					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
-					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
-					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
-					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
-					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
-					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
-					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
-					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
-					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
-					<div class="grid__item"><i class="fa fa-fw fa-image"></i></div>
+					<!-- <div class="grid__item" ng-repeat='acc in allAccounts'><i class="fa fa-fw fa-image"></i>
+						<label>{{acc.bankId}}</label><br/>
+						<label>{{acc.balance.amount}}</label>
+					</div> -->
 				</div>
 			</div><!-- /content -->
 		</div><!-- /container -->
 		<div id="drop-area" class="drop-area">
 			<div id='container'>
-				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
-				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
-				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
-				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
-				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
-				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
-				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
-				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
-				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
-				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
-				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
-				<div class="glass drop-area__item"><div class="water"></div><div class="dummy"></div></div>
-			</div>
+				<div class="glass drop-area__item" ng-repeat='payee in payeeAccounts'>
+					<label>{{payee.source.bankId}}</label>
+				<div class="water"></div><div class="dummy"></div></div>
 		</div>
 		<div class="drop-overlay"></div>
 		
@@ -54,24 +37,22 @@
 		    <fieldset id="inputs">
 		    	<div>From Account</div>
 		    	<select class='selects' ng-model='makePaymentObj.from.account_id'>
-		    		<option>Acc1</option>
-		    		<option>Acc1</option>
-		    		<option>Acc1</option>
-		    		<option>Acc1</option>
+		    		<option ng-repeat='acc in allAccounts'
+                            value="{{acc.bankId}}">
+                      {{acc.username}}
+                    </option>
 		    	</select>
 		    	<div>To Account</div>
 		    	<select class='selects' ng-model='makePaymentObj.to.account_id'>
-		    		<option>Acc1</option>
-		    		<option>Acc1</option>
-		    		<option>Acc1</option>
-		    		<option>Acc1</option>
+		    		<option ng-repeat='payee in payeeAccounts'
+                            value="{{payee.party.accountId}}">
+                      {{payee.party.name}}
+                    </option>
 		    	</select>
-		    	<!-- <div>Acount Number</div>
-		        <input id="username" type="number" onblur="if(this.value=='')this.value='Account Number';" onfocus="if(this.value=='Pseudo ID')this.value='';" value="Pseudo ID" /> -->
 		    	<div>Amount</div>
-		        <input id="username" type="number" ng-model='makePaymentObj.value.amount' onblur="if(this.value=='')this.value='Amount';" onfocus="if(this.value=='Pseudo ID')this.value='';" value="Pseudo ID" />
+		        <input id="amount" type="number" ng-model='makePaymentObj.value.amount' />
 		        <div>Description</div>
-		        <input id="password" type="text" ng-model='makePaymentObj.description' onblur="if(this.value=='')this.value='Description';" onfocus="if(this.value=='Mot de passe')this.value='';" value="Mot de passe" />
+		        <input id="desc" type="text" ng-model='makePaymentObj.description' />
 		    </fieldset>
 		    <fieldset id="actions">
 		       <!--  <button class="button button-full button-positive" ng-click="closeModal()">Move</button> -->

@@ -1,5 +1,10 @@
 /* Empty. Add your own CSS if you like */
 
+@font-face{
+  font-family:"Amarante" !important;
+  src:url("http://www.myfontfree.com/data/126/a/amarante/Amarante-Regular.ttf") !important;
+}
+
 .scroll{
 	height: 100%;
 }
@@ -44,3 +49,10 @@
     transition: opacity 300ms ease-in-out;
     background-color: #000;
     opacity: 0; } }
+
+    .qrScan{
+          width: 32px;
+    float: right;
+    margin-right: 8%;
+    cursor: pointer;
+    }

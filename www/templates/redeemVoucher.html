@@ -1,7 +1,38 @@
-<ion-view style="" id="page12" title="Redeem Voucher">
+<ion-view style="" id="page12" title="Redeem Voucher" hide-nav-bar="true">
     <ion-content class="has-header" padding="true">
-        <a class="button button-stable button-small icon ion-ios-arrow-back" id="redeemVoucher-button32" ui-sref="menu.tiles"></a>
-        <form class="list" id="redeemVoucher-form6">
+        <form id="login" action="none">
+            <h1 id="ff-proof" class="ribbon">Move Money &nbsp;&nbsp;</h1>
+            <div class="apple">
+                <div class="top"><span></span></div>
+                <div class="butt"><span></span></div>
+                <div class="bite"></div>
+            </div>
+            <fieldset id="inputs">
+                <div>From Account</div>
+                <select class='selects' ng-model='makePaymentObj.from.account_id'>
+                    <option ng-repeat='acc in allAccounts'
+                            value="{{acc.bankId}}">
+                      {{acc.username}}
+                    </option>
+                </select>
+                <div>To Account</div>
+                <select class='selects' ng-model='makePaymentObj.to.account_id'>
+                    <option ng-repeat='payee in payeeAccounts'
+                            value="{{payee.party.accountId}}">
+                      {{payee.party.name}}
+                    </option>
+                </select>
+                <div>Amount</div>
+                <input id="amount" type="number" ng-model='makePaymentObj.value.amount' />
+                <div>Description</div>
+                <input id="desc" type="text" ng-model='makePaymentObj.description' />
+            </fieldset>
+            <fieldset id="actions">
+               <!--  <button class="button button-full button-positive" ng-click="closeModal()">Move</button> -->
+               <input type="button" id="submit" value="Move" ng-click='moveMoney()'>
+            </fieldset>
+        </form>
+        <!-- <form class="list" id="redeemVoucher-form6">
             <label id="redeemVoucher-input12" class="item item-input">
                 <span class="input-label">Code</span>
                 <input placeholder="Code" type="text" ng-model="voucherCode">
@@ -11,6 +42,6 @@
                 <input placeholder="Account number" type="text" ng-model="toAccount">
             </label>
         </form>
-        <button class="button button-positive  button-block" id="redeemVoucher-button33" ng-click="redeemVoucher()">Redeem Voucher</button>
+        <button class="button button-positive  button-block" id="redeemVoucher-button33" ng-click="redeemVoucher()">Redeem Voucher</button> -->
     </ion-content>
 </ion-view>

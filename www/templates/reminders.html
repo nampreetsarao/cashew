@@ -1,10 +1,10 @@
-<ion-view style="" id="page13" title="Reminders">
+<ion-view style="" id="page13" title="Reminders" hide-nav-bar="true">
     <ion-content class="has-header" padding="true">
-       <ion-list>
+       <!-- <ion-list>
             <div ng-repeat="group in groups">
               <ion-item class="item-stable">
                   <!-- <i class="icon" ng-class="isGroupShown(group) ? 'ion-minus' : 'ion-plus'"></i> -->
-                &nbsp;
+                <!-- &nbsp;
                 Transaction of: {{group.name}} {{highlightChallenge}}
               </ion-item>
 
@@ -18,7 +18,19 @@
               </ion-item>
 
             </div> 
-     </ion-list> 
+     </ion-list>  - -->->
+
+     <div class="card">
+        <div class="item item-divider">
+          Reminder
+        </div>
+        <div class="item item-text-wrap">
+          This is a basic Card with some text.
+        </div>
+        <div class="item item-divider">
+          <button id="makeAPayment-button4" class=" button button-positive  button-block " ng-click="answerChallenge('{{group.challengeId[0]}}', '{{group.challengeType[0]}}','{{group.transactionId[0]}}')" >Pay</button> 
+        </div>
+      </div>
 
     </ion-content>
 </ion-view>
