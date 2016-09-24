@@ -27,6 +27,8 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.directives
         $window.addEventListener('LaunchUrl', function(event) {
             // gets page name from url
             var page =/.*:[/]{2}([^?]*)[?]?(.*)/.exec(event.detail.url)[1];
+
+            alert(event.detail.url);
             // redirects to page specified in url
             //$state.go('tab.'+ page, {});
             $state.go('menu.moveMoney', {});
@@ -37,6 +39,7 @@ angular.module('app', ['ionic', 'app.controllers', 'app.routes', 'app.directives
 
 function handleOpenURL(url) {
     setTimeout( function() {
+      alert("url received:"+url);
         var event = new CustomEvent('LaunchUrl', {detail: {'url': url}});
         window.dispatchEvent(event);
     }, 0);

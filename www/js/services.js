@@ -1,11 +1,11 @@
 angular.module('app-constants', [])
 .constant('apiUrl', '@@apiUrl')
-.constant("server", "169.46.157.198")
+.constant("server", "169.46.157.252")
 .constant("port", "8085")
 .constant("portForSignup", "8084")
 .constant("baseURL","/cashewapi")
 .constant("baseURLForOAuth","/bigoauth2server")
-.constant("token","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6Ijg0MDg4YTMzLWUxODktNDQyZC1iNGZlLTAyNjliMDZhZGViMCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NzIxNzA5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImVjMTE1Njc2LTQ2NTUtNDgxZS04MTM3LTRmNzM5YWEyYjAxOCIsImNsaWVudF9pZCI6Ijg0MDg4YTMzLWUxODktNDQyZC1iNGZlLTAyNjliMDZhZGViMCJ9.pIPqGUXAcawtW6K82KJYFso1tQqe-8Pso7FBxlblqB8")
+.constant("token","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjI2YTllNWQwLTRlMGMtNDhkMC04ZmQ4LWNhN2ZkOWYwZTA1ZiIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NzMxODY2LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjYyMDk1NDYwLWZkMTMtNGFmNS04MDZjLTU5M2Y5MmYwZWY5MiIsImNsaWVudF9pZCI6IjI2YTllNWQwLTRlMGMtNDhkMC04ZmQ4LWNhN2ZkOWYwZTA1ZiJ9.5ZihwTyLfrsJ8rZvQTDyjuKNhnd3QZ-IkswnogAnHgM")
 
 .factory('constantService', function ($http, server, port, baseURL, baseURLForOAuth, portForSignup,token) {
     return {
