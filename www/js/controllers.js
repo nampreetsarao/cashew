@@ -1,15 +1,12 @@
   angular.module('app.controllers', [])
     
-  .controller('tilesCtrl', ['$scope', '$stateParams', '$state', 'getAllAccountsDetailsService','StorageService','profileService','$ionicPopup', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
-  // You can include any angular dependencies as parameters for this function
-  // TIP: Access Route Parameters for your page via $stateParams.parameterName
-  function ($scope, $stateParams, $state, getAllAccountsDetailsService,StorageService,profileService, $ionicPopup) {
+  .controller('tilesCtrl', function ($scope, $stateParams, $state, getAllAccountsDetailsService,StorageService,profileService,accountTransactionAPI, $ionicPopup) {
 
    
    $scope.allAccounts = {};
       //calling all Accounts    
 
-    var promise = getAllAccountsDetailsService.getAllAccounts();
+    /*var promise = getAllAccountsDetailsService.getAllAccounts();
     promise.then(function(data) {
         $scope.allAccounts = data;
     });
@@ -50,7 +47,7 @@
   myPopup.then(function(res) {
       $state.go('menu.subscription');
           
-  });
+  });*/
    /*
       consolidated user bank account details
       API : Get User's Bank Account Details
@@ -115,7 +112,7 @@
     });
   	
 
-  }])
+  })
      
   .controller('cartCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
   // You can include any angular dependencies as parameters for this function
@@ -1094,7 +1091,29 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
   .controller('insightsCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
   // You can include any angular dependencies as parameters for this function
   // TIP: Access Route Parameters for your page via $stateParams.parameterName
+  
   function ($scope, $stateParams) {
+
+      $scope.insights = {
+            "status": "SUCCESS",
+            "response": [
+              {
+                "insightId": null,
+                "value": "15.0",
+                "unit": "AVG",
+                "description": "Users at your age group spend on food 15.0"
+              },
+              {
+                "insightId": null,
+                "value": "23.0",
+                "unit": "AVG",
+                "description": "Users at your age group spend on entertainment 23.0"
+              }
+            ],
+            "version": "1"
+          };
+
+      $scope.cards = [];
 
       var pics = ['img/insight1.jpg', 'img/insight2.jpg', 'img/insight3.jpg', 'img/insight4.jpg', 'img/insight5.jpg'];
 
@@ -1120,6 +1139,16 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
             image: pics[Math.floor(Math.random()*pics.length)]
           }];
 
+          for(var idx=0;idx<$scope.insights.length;idx++){
+
+            var insight = $scope.insights[idx];
+            var card = {
+                desc: insight.description,
+                image: pics[Math.floor(Math.random()*pics.length)]
+            };
+            cards.push(card);
+          }
+
           $scope.cards = Array.prototype.slice.call(cardTypes, 0, 0);
 
           $scope.cardSwiped = function(index) {
@@ -1144,6 +1173,14 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
   }])
      
   .controller('smartToolsCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+  // You can include any angular dependencies as parameters for this function
+  // TIP: Access Route Parameters for your page via $stateParams.parameterName
+  function ($scope, $stateParams) {
+
+
+  }])
+
+   .controller('creditsCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
   // You can include any angular dependencies as parameters for this function
   // TIP: Access Route Parameters for your page via $stateParams.parameterName
   function ($scope, $stateParams) {
