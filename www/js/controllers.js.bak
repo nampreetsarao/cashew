@@ -21,7 +21,7 @@
     //StorageService.add($scope.profileData);
 
    var isSetupComplete= StorageServiceForIsSetup.getAll();
-   //alert("is setup complete:"+isSetupComplete);
+   alert("is setup complete:"+isSetupComplete);
    $scope.data={};
    if(!Boolean(isSetupComplete) || isSetupComplete.length==0){
           //adding popup 
@@ -1191,7 +1191,7 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
           };
 
           $scope.addCard = function() {
-            var newCard = $scope.cardTypes[Math.floor(Math.random() * $scope.cardTypes.length)];
+            var newCard = cardTypes[Math.floor(Math.random() * cardTypes.length)];
             newCard.id = Math.random();
             $scope.cards.push(angular.extend({}, newCard));
           }

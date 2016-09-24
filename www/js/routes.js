@@ -137,6 +137,16 @@ angular.module('app.routes', [])
     }
   })
 
+  .state('menu.credits', {
+    url: '/page141',
+    views: {
+      'side-menu21': {
+        templateUrl: 'templates/credits.html',
+        controller: 'creditsCtrl'
+      }
+    }
+  })
+
   .state('menu.smartTools', {
     url: '/page15',
     views: {

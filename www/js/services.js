@@ -197,7 +197,7 @@ angular.module('app.services', ['app-constants'])
     }
 
     var profileInformation =StorageService.getAll();
-     alert("Profile information:"+JSON.stringify(profileInformation)); 
+     //alert("Profile information:"+JSON.stringify(profileInformation)); 
     /*
       Add Tags
       API : Add Tags
@@ -861,6 +861,43 @@ angular.module('app.services', ['app-constants'])
     };
 
 })
+
+//get All Insights service
+.service('InsightsService', function($state,$http,$q,$ionicLoading,constantService,StorageServiceForToken,$ionicPopup) {   
+
+    //to fetch all insights
+    var insightsDeferred = $q.defer();
+    this.getAllInsights = function() {
+      $ionicLoading.show(); 
+      var allAccountDetails=[];
+      var authorizationToken = '';
+      var oauthData = StorageServiceForToken.getAll();
+      if(oauthData!=null && oauthData.length>0){
+          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      }else{
+        allAccountDetails='First authenticate and then make this call.';
+      }
+      //$http.defaults.headers.common.Authorization=authorizationToken;
+      $http.defaults.headers.common.Authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjQ2MjcxLCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImUyOGVhMTg0LWI3ZjAtNGRkYi1iYzdjLTY5MmRmZDFkNWYyMCIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.nt3y5-FaLiKXyiRHcHs_Wq8am0W_gV5VIY_ycXmjAUI';
+
+      //alert('http://'+constantService.server+':'+constantService.port+'/psd2api/my/banks/BARCGB/accounts');
+      $http.get('http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/expenseInsightsForAgeGroup').then(function(resp){
+          console.log('Success', resp); // JSON object
+          //allAccountDetails=resp;
+          insightsDeferred.resolve(resp);
+          $ionicLoading.hide(); 
+        }, function(err){
+          console.error('ERR', err);
+          $ionicLoading.hide();
+          var alertPopup = $ionicPopup.alert({
+            title: 'Show all accounts: Alert',
+            template:'Error occured while calling the API:'+err
+          });
+        });
+        return insightsDeferred.promise;
+    };
+})
+
 
 //get All Account details service
 .service('remindersService', function($state,$http,$q,$ionicLoading,constantService,StorageServiceForToken,$ionicPopup) {  
