@@ -10,14 +10,14 @@
             <fieldset id="inputs">
                 
                 <div>Code</div>
-                <input id="desc" type="text" ng-model='' />
+                <input id="code" type="text" ng-model='voucherCode' />
 
                 <div>To Account</div>
-                <select class='selects' ng-model='toAccount'>
-                    <option ng-repeat='payee in payeeAccounts'
-                            value="{{payee.party.accountId}}">
-                      {{payee.party.name}}
-                    </option>
+                <select id='toAccount' class='selects' >
+                    <option ng-repeat='acc in allAccounts'
+                            ng-value="acc.id">
+                            {{acc.bankId}}:{{acc.id}} 
+                    </option>                    
                 </select>
 
                 <div>Amount</div>

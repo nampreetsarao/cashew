@@ -5,19 +5,31 @@ angular.module('app-constants', [])
 .constant("portForSignup", "8084")
 .constant("baseURL","/cashewapi")
 .constant("baseURLForOAuth","/bigoauth2server")
+.constant("token","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NzMwMTMwLCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjdjZWRkZjU1LTNlMzUtNDkxNS1hMmY3LTZkN2MzYWUwN2Q5ZCIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.gf0eebFGxA3MjvCD0IE2ApPldv9zmebAK2M6ffasRF8")
 
-.factory('constantService', function ($http, server, port, baseURL, baseURLForOAuth, portForSignup) {
+.factory('constantService', function ($http, server, port, baseURL, baseURLForOAuth, portForSignup,token) {
     return {
         server:server,
         port: port,
         baseURL: baseURL, 
         baseURLForOAuth: baseURLForOAuth, 
-        portForSignup: portForSignup
+        portForSignup: portForSignup,
+        token: token
+    }
+})
+
+
+.factory('profileInfoService', function(){
+    var profile = {};
+    return {
+        setToken : function(token){
+            profile.token = token;
+        },
+        getToken :function(){
+            return profile.token;
+        }
     }
 });
-
-
-
 
 angular.module('app.services', ['app-constants'])
 
@@ -30,13 +42,14 @@ angular.module('app.services', ['app-constants'])
       var allAccountDetails=[];
       var authorizationToken = '';
       var oauthData = StorageServiceForToken.getAll();
-      if(oauthData!=null && oauthData.length>0){
-          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      oauthData =constantService.token;
+      if(oauthData!=null ){
+          authorizationToken = 'Bearer '+ oauthData;
       }else{
         allAccountDetails='First authenticate and then make this call.';
       }
       //$http.defaults.headers.common.Authorization=authorizationToken;
-      $http.defaults.headers.common.Authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE0Njc4OTUzODQsInVzZXJfbmFtZSI6Im5zaW5naCIsImF1dGhvcml0aWVzIjpbIlVTRVIiXSwianRpIjoiMTExMWRhNzMtMWY3ZC00NDA1LTk3ZDEtM2FjNGNiNmM5MzllIiwiY2xpZW50X2lkIjoicG9zdG1hbiIsInNjb3BlIjpbIndyaXRlIl19.XtM6MjWkbVlaudZRWXHvTlhpzTU9Q64qF7UdR-BB5Zs';
+      $http.defaults.headers.common.Authorization=authorizationToken;
       //alert('http://'+constantService.server+':'+constantService.port+'/psd2api/my/banks/BARCGB/accounts');
       $http.get('http://'+constantService.server+':'+constantService.port+'/psd2api/my/banks/BARCGB/accounts').then(function(resp){
           console.log('Success', resp); // JSON object
@@ -48,7 +61,7 @@ angular.module('app.services', ['app-constants'])
           $ionicLoading.hide();
           var alertPopup = $ionicPopup.alert({
             title: 'Show all accounts: Alert',
-            template:'Error occured while calling the API:'+err
+            template:'Error occured while calling the API:'+JSON.stringify(err)
           });
         });
         return deferred.promise;
@@ -65,8 +78,9 @@ angular.module('app.services', ['app-constants'])
       var voucherDetails='';
       var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoidGFubWF5LmFtYnJlQGluLmlibS5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDQ3ODEyNSwidXNlck5hbWUiOiJ0YW5tYXkuYW1icmVAaW4uaWJtLmNvbSIsInVzZXJJZCI6InRhbm1heS5hbWJyZUBpbi5pYm0uY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjI0MzAzNWZlLWViMjEtNGU0Ni1hZDUyLTVmMDExMThmNjJkYiIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.7PhF09gOPUbe7lrBf9jpWr3Yyfy5JRSYwf4LIkaGxgY';
       var oauthData = StorageServiceForToken.getAll();
-      if(oauthData!=null && oauthData.length>0){
-          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      oauthData =constantService.token;
+      if(oauthData!=null ){
+          authorizationToken = 'Bearer '+ oauthData;
       }else{
         voucherDetails='First authenticate and then make this call.';
       }
@@ -101,6 +115,7 @@ angular.module('app.services', ['app-constants'])
       var voucherDetails='';
       var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoidGFubWF5LmFtYnJlQGluLmlibS5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDQ2NDU5MywidXNlck5hbWUiOiJ0YW5tYXkuYW1icmVAaW4uaWJtLmNvbSIsInVzZXJJZCI6InRhbm1heS5hbWJyZUBpbi5pYm0uY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjUxNjE1N2VhLWJiNzMtNDZlMy04ZGQ1LTA0M2FlMjk5YjJlNyIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.Nw5qIN3uzpoKfOUSbiBrqRSCtwylFqII7BM31sfHMDM';
       var oauthData = StorageServiceForToken.getAll();
+      oauthData =constantService.token;
       if(oauthData!=null && oauthData.length>0){
           authorizationToken = 'Bearer '+ oauthData[0].access_token;
       }else{
@@ -137,8 +152,9 @@ angular.module('app.services', ['app-constants'])
   this.getAllTags = function(){
     var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjQ5NzM5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjI3ZjQ3MDVhLWU5NzQtNDJmMi1iY2Q5LTQzZTk5YjA5M2EwZSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.CGrIDlpkbgvNjS4vDjnXfiVXfLd3yA-6OhzQQUojUOg';
     var oauthData = StorageServiceForToken.getAll();
-    if(oauthData!=null && oauthData.length>0){
-        authorizationToken = 'Bearer '+ oauthData[0].access_token;
+    oauthData =constantService.token;
+    if(oauthData!=null ){
+        authorizationToken = 'Bearer '+ oauthData;
     }else{
       voucherDetails='First authenticate and then make this call.';
     }
@@ -170,15 +186,18 @@ angular.module('app.services', ['app-constants'])
   }  
 })
 
-.service('tagService', function($http, $q, $ionicLoading,$ionicPopup, constantService, StorageServiceForToken){
+.service('tagService', function($http, $q, $ionicLoading,$ionicPopup, constantService, StorageServiceForToken,StorageService){
     var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjQ5NzM5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjI3ZjQ3MDVhLWU5NzQtNDJmMi1iY2Q5LTQzZTk5YjA5M2EwZSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.CGrIDlpkbgvNjS4vDjnXfiVXfLd3yA-6OhzQQUojUOg';
     var oauthData = StorageServiceForToken.getAll();
-    if(oauthData!=null && oauthData.length>0){
-        authorizationToken = 'Bearer '+ oauthData[0].access_token;
+    oauthData =constantService.token;
+    if(oauthData!=null ){
+        authorizationToken = 'Bearer '+ oauthData;
     }else{
       voucherDetails='First authenticate and then make this call.';
     }
 
+    var profileInformation =StorageService.getAll();
+     alert("Profile information:"+JSON.stringify(profileInformation)); 
     /*
       Add Tags
       API : Add Tags
@@ -221,8 +240,9 @@ angular.module('app.services', ['app-constants'])
       var voucherDetails='';
       var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjI0NTI1LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjAxZWJmYWExLTNjMWQtNGE3Yy1hMTM1LWI1NWM0YjNiNGFkNCIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.H8QKAgLwTGDv_aJMxY_msX_ID6pIHOgB4H0_6LYa6Qs';
       var oauthData = StorageServiceForToken.getAll();
-      if(oauthData!=null && oauthData.length>0){
-          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      oauthData =constantService.token;
+      if(oauthData!=null ){
+          authorizationToken = 'Bearer '+ oauthData;
       }else{
         voucherDetails='First authenticate and then make this call.';
       }
@@ -258,8 +278,9 @@ angular.module('app.services', ['app-constants'])
       var voucherDetails='';
       var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjI0NTI1LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjAxZWJmYWExLTNjMWQtNGE3Yy1hMTM1LWI1NWM0YjNiNGFkNCIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.H8QKAgLwTGDv_aJMxY_msX_ID6pIHOgB4H0_6LYa6Qs';
       var oauthData = StorageServiceForToken.getAll();
-      if(oauthData!=null && oauthData.length>0){
-          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      oauthData =constantService.token;
+      if(oauthData!=null){
+          authorizationToken = 'Bearer '+ oauthData;
       }else{
         voucherDetails='First authenticate and then make this call.';
       }
@@ -299,8 +320,9 @@ angular.module('app.services', ['app-constants'])
       var voucherDetails='';
       var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjI0NTI1LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjAxZWJmYWExLTNjMWQtNGE3Yy1hMTM1LWI1NWM0YjNiNGFkNCIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.H8QKAgLwTGDv_aJMxY_msX_ID6pIHOgB4H0_6LYa6Qs';
       var oauthData = StorageServiceForToken.getAll();
-      if(oauthData!=null && oauthData.length>0){
-          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      oauthData =constantService.token;
+      if(oauthData!=null){
+          authorizationToken = 'Bearer '+ oauthData;
       }else{
         voucherDetails='First authenticate and then make this call.';
       }
@@ -338,13 +360,15 @@ angular.module('app.services', ['app-constants'])
 .service('profileService', function($state,$http,$q,$ionicLoading,constantService,StorageServiceForToken,$ionicPopup) {
     var deferred = $q.defer();
     //service to generate the voucher
-    this.getProfile = function() {
+    this.getProfile = function(token) {
       $ionicLoading.show(); 
       var profileDetails='';
-      var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjM2Mjc1LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImJkZGUxYmJlLTk1NjctNDlkOS04NDQ1LWU0MjAxMDNmN2M5NyIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.0I_bXk6Rty3rjoqWZpQnNPWiCyBf-zbSwElOM0ogrXM';
+      var authorizationToken = 'Bearer '+token;
       var oauthData = StorageServiceForToken.getAll();
-      if(oauthData!=null && oauthData.length>0){
-          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      oauthData =constantService.token;
+     // alert(JSON.stringify(oauthData));
+      if(oauthData!=null){
+          authorizationToken = 'Bearer '+ oauthData;
       }else{
           profileDetails='First authenticate and then make this call.';
       }
@@ -362,11 +386,12 @@ angular.module('app.services', ['app-constants'])
           $ionicLoading.hide(); 
           console.log(result);
        }, function(err) {
+          
           console.error('ERR', err);
           $ionicLoading.hide();
           var alertPopup = $ionicPopup.alert({
             title: 'Error fetching profile details',
-            template:'Error occured while calling the API:'+JSON.stringify(err)+"."
+            template:'Error occured while calling the API:'+JSON.stringify(err)+"."+" OAuth token: "+JSON.stringify(oauthData)
           });
        });
       return deferred.promise;
@@ -379,8 +404,9 @@ angular.module('app.services', ['app-constants'])
 .service('accountTransactionAPI', function($http, $q, constantService, StorageServiceForToken){
   var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjQ5NzM5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjI3ZjQ3MDVhLWU5NzQtNDJmMi1iY2Q5LTQzZTk5YjA5M2EwZSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.CGrIDlpkbgvNjS4vDjnXfiVXfLd3yA-6OhzQQUojUOg';
     var oauthData = StorageServiceForToken.getAll();
-    if(oauthData!=null && oauthData.length>0){
-        authorizationToken = 'Bearer '+ oauthData[0].access_token;
+    oauthData =constantService.token;
+    if(oauthData!=null ){
+        authorizationToken = 'Bearer '+ oauthData;
     }else{
       voucherDetails='First authenticate and then make this call.';
     }
@@ -726,23 +752,25 @@ angular.module('app.services', ['app-constants'])
 
 
 //get All Account details service
-.service('getAllAccountsDetailsService', function($state,$http,$q,$ionicLoading,constantService,StorageServiceForToken,$ionicPopup) {
+.service('getAllAccountsDetailsService', function($state,$http,$q,$ionicLoading,constantService,profileInfoService, StorageServiceForToken,$ionicPopup) {
     
-
     //to fetch all acounts
     var accDeferred = $q.defer();
     this.getAllAccounts = function() {
       $ionicLoading.show(); 
       var allAccountDetails=[];
       var authorizationToken = '';
-      var oauthData = StorageServiceForToken.getAll();
-      if(oauthData!=null && oauthData.length>0){
-          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      //var oauthData = StorageServiceForToken.getAll();
+      var oathData = profileInfoService.getToken();
+      oauthData =constantService.token;
+      //alert("oathData: "+JSON.stringify(oathData));
+      if(oauthData!=null ){
+          authorizationToken = 'Bearer '+ oauthData;
       }else{
         allAccountDetails='First authenticate and then make this call.';
       }
       //$http.defaults.headers.common.Authorization=authorizationToken;
-      $http.defaults.headers.common.Authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjQ2MjcxLCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImUyOGVhMTg0LWI3ZjAtNGRkYi1iYzdjLTY5MmRmZDFkNWYyMCIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.nt3y5-FaLiKXyiRHcHs_Wq8am0W_gV5VIY_ycXmjAUI';
+      $http.defaults.headers.common.Authorization=authorizationToken;
 
       //alert('http://'+constantService.server+':'+constantService.port+'/psd2api/my/banks/BARCGB/accounts');
       $http.get('http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/iceman@gmail.com/accounts').then(function(resp){
@@ -755,7 +783,7 @@ angular.module('app.services', ['app-constants'])
           $ionicLoading.hide();
           var alertPopup = $ionicPopup.alert({
             title: 'Show all accounts: Alert',
-            template:'Error occured while calling the API:'+err
+            template:'Error occured while calling the API:'+JSON.stringify(err)+".Oauth token:"+oauthData
           });
         });
         return accDeferred.promise;
@@ -769,13 +797,14 @@ angular.module('app.services', ['app-constants'])
       var allAccountDetails=[];
       var authorizationToken = '';
       var oauthData = StorageServiceForToken.getAll();
-      if(oauthData!=null && oauthData.length>0){
-          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      oauthData =constantService.token;
+      if(oauthData!=null){
+          authorizationToken = 'Bearer '+ oauthData;
       }else{
         allAccountDetails='First authenticate and then make this call.';
       }
       //$http.defaults.headers.common.Authorization=authorizationToken;
-      $http.defaults.headers.common.Authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjQ2MjcxLCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImUyOGVhMTg0LWI3ZjAtNGRkYi1iYzdjLTY5MmRmZDFkNWYyMCIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.nt3y5-FaLiKXyiRHcHs_Wq8am0W_gV5VIY_ycXmjAUI';
+      $http.defaults.headers.common.Authorization=authorizationToken;
       //alert('http://'+constantService.server+':'+constantService.port+'/psd2api/my/banks/BARCGB/accounts');
       $http.get('http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/iceman@gmail.com/IBMGB/7278/payees').then(function(resp){
           console.log('Success', resp); // JSON object
@@ -787,7 +816,7 @@ angular.module('app.services', ['app-constants'])
           $ionicLoading.hide();
           var alertPopup = $ionicPopup.alert({
             title: 'Show all accounts: Alert',
-            template:'Error occured while calling the API:'+err
+            template:'Error occured while calling the API:'+JSON.stringify(err)
           });
         });
         return payeeDeferred.promise;
@@ -801,8 +830,9 @@ angular.module('app.services', ['app-constants'])
       var voucherDetails='';
       var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjQ2MjcxLCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImUyOGVhMTg0LWI3ZjAtNGRkYi1iYzdjLTY5MmRmZDFkNWYyMCIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.nt3y5-FaLiKXyiRHcHs_Wq8am0W_gV5VIY_ycXmjAUI';
       var oauthData = StorageServiceForToken.getAll();
-      if(oauthData!=null && oauthData.length>0){
-          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      oauthData =constantService.token;
+      if(oauthData!=null ){
+          authorizationToken = 'Bearer '+ oauthData;
       }else{
         voucherDetails='First authenticate and then make this call.';
       }
@@ -880,8 +910,9 @@ angular.module('app.services', ['app-constants'])
       var voucherDetails='';
       var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoidGFubWF5LmFtYnJlQGluLmlibS5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDU1NDcyMCwidXNlck5hbWUiOiJ0YW5tYXkuYW1icmVAaW4uaWJtLmNvbSIsInVzZXJJZCI6InRhbm1heS5hbWJyZUBpbi5pYm0uY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6Ijk5ZjIzYWE1LTE5MWMtNGI0Zi04NzcxLWQ3ZTY0Nzk1YzRhZSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.sFm3uBrD0bv_qb2dCFPgDwz24w5-LLAS2znzTmracr8';
       var oauthData = StorageServiceForToken.getAll();
-      if(oauthData!=null && oauthData.length>0){
-          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      oauthData =constantService.token;
+      if(oauthData!=null ){
+          authorizationToken = 'Bearer '+ oauthData;
       }else{
         voucherDetails='First authenticate and then make this call.';
       }
@@ -911,6 +942,7 @@ angular.module('app.services', ['app-constants'])
 
 })
 
+
 .service('dummyService', function($state,$http,$q,$ionicLoading,constantService,StorageServiceForToken,$ionicPopup) { 
 
 var deferred = $q.defer();
@@ -920,8 +952,9 @@ var deferred = $q.defer();
       var subscriptionDetails='';
       var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoidGFubWF5LmFtYnJlQGluLmlibS5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDU1NDcyMCwidXNlck5hbWUiOiJ0YW5tYXkuYW1icmVAaW4uaWJtLmNvbSIsInVzZXJJZCI6InRhbm1heS5hbWJyZUBpbi5pYm0uY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6Ijk5ZjIzYWE1LTE5MWMtNGI0Zi04NzcxLWQ3ZTY0Nzk1YzRhZSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.sFm3uBrD0bv_qb2dCFPgDwz24w5-LLAS2znzTmracr8';
       var oauthData = StorageServiceForToken.getAll();
-      if(oauthData!=null && oauthData.length>0){
-          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      oauthData =constantService.token;
+      if(oauthData!=null ){
+          authorizationToken = 'Bearer '+ oauthData;
       }else{
         subscriptionDetails='First authenticate and then make this call.';
       }
@@ -961,8 +994,9 @@ var deferred = $q.defer();
       var subscriptionDetails='';
       var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoibmlzaGEuYmhhZ2RldkBnbWFpbC5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDY1MDUzOCwidXNlck5hbWUiOiJuaXNoYS5iaGFnZGV2QGdtYWlsLmNvbSIsInVzZXJJZCI6Im5pc2hhLmJoYWdkZXZAZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImJkZDcyNjY5LTAyNzgtNDI4My04MGFiLTk3YmQ1MDhiODMyMyIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.lgA3-lCTGfdi-aPdriGU7f8w24GxljkyrF0GBwYddZw';
       var oauthData = StorageServiceForToken.getAll();
-      if(oauthData!=null && oauthData.length>0){
-          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      oauthData =constantService.token;
+      if(oauthData!=null ){
+          authorizationToken = 'Bearer '+ oauthData;
       }else{
         subscriptionDetails='First authenticate and then make this call.';
       }
@@ -985,7 +1019,7 @@ var deferred = $q.defer();
           $ionicLoading.hide();
           var alertPopup = $ionicPopup.alert({
             title: 'Error fetching get all accounts',
-            template:'Error occured while calling the API:'+JSON.stringify(err)+"."
+            template:'Error occured while calling the API:'+JSON.stringify(err)+". OAuthToken: "+oauthData
           });
        });
         return deferred.promise;
@@ -998,8 +1032,9 @@ var deferred = $q.defer();
       var subscriptionDetails='';
       var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoibmlzaGEuYmhhZ2RldkBnbWFpbC5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDY1MDUzOCwidXNlck5hbWUiOiJuaXNoYS5iaGFnZGV2QGdtYWlsLmNvbSIsInVzZXJJZCI6Im5pc2hhLmJoYWdkZXZAZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImJkZDcyNjY5LTAyNzgtNDI4My04MGFiLTk3YmQ1MDhiODMyMyIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.lgA3-lCTGfdi-aPdriGU7f8w24GxljkyrF0GBwYddZw';
       var oauthData = StorageServiceForToken.getAll();
-      if(oauthData!=null && oauthData.length>0){
-          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      oauthData =constantService.token;
+      if(oauthData!=null ){
+          authorizationToken = 'Bearer '+ oauthData;
       }else{
         subscriptionDetails='First authenticate and then make this call.';
       }
@@ -1029,6 +1064,43 @@ var deferred = $q.defer();
       // body...
     }
 
+})
+
+
+//get All Insights service
+.service('InsightsService', function($state,$http,$q,$ionicLoading,constantService,StorageServiceForToken,$ionicPopup) {   
+    //to fetch all insights
+    var insightsDeferred = $q.defer();
+    this.getAllInsights = function() {
+      $ionicLoading.show(); 
+      var allAccountDetails=[];
+      var authorizationToken = '';
+      var oauthData = StorageServiceForToken.getAll();
+      oauthData =constantService.token;
+      if(oauthData!=null ){
+          authorizationToken = 'Bearer '+ oauthData;
+      }else{
+        allAccountDetails='First authenticate and then make this call.';
+      }
+      //$http.defaults.headers.common.Authorization=authorizationToken;
+      $http.defaults.headers.common.Authorization=authorizationToken;
+
+      //alert('http://'+constantService.server+':'+constantService.port+'/psd2api/my/banks/BARCGB/accounts');
+      $http.get('http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/expenseInsightsForAgeGroup').then(function(resp){
+          console.log('Success', resp); // JSON object
+          //allAccountDetails=resp;
+          insightsDeferred.resolve(resp);
+          $ionicLoading.hide(); 
+        }, function(err){
+          console.error('ERR', err);
+          $ionicLoading.hide();
+          var alertPopup = $ionicPopup.alert({
+            title: 'Error calling insights service: Alert',
+            template:'Error occured while calling the API:'+JSON.stringify(err)
+          });
+        });
+        return insightsDeferred.promise;
+    };
 })
 
 // //Factory for Voucher services
@@ -1067,7 +1139,8 @@ var deferred = $q.defer();
             method:'POST',
             headers: {
                   'Content-Type': 'application/x-www-form-urlencoded',
-                  'authorization': 'Basic NGE0YjAyODEtNDliMS00NTMzLWIzYWMtZWVlMTFmMWY2YmQ4OiQyYSQxMCROSmg0Sm9scDlXQURBY0l2MVlPcG11NTdrSThqTWVRVDd0cnNSZm5HWHdxRS9LYkdSYnV6aQ=='
+
+                  'authorization': 'Basic ODQwODhhMzMtZTE4OS00NDJkLWI0ZmUtMDI2OWIwNmFkZWIwOiQyYSQxMCRpbXpXaVdDd1BEUjVrcGxkVW5aU05PNjM2V2pqbW9BbWRhRnU3VHNleUt3TkhkbzNiV1A5dQ=='
               }
             }
         });
