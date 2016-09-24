@@ -19,13 +19,13 @@
         $scope.profileData = data;
     });
 
-   // StorageService.remove($scope.profileData);
-   // StorageService.add($scope.profileData);
+    //StorageService.remove($scope.profileData);
+    //StorageService.add($scope.profileData);
 
    var isSetupComplete= StorageServiceForIsSetup.getAll();
-   alert("is setup complete:"+isSetupComplete);
+   /*alert("is setup complete:"+isSetupComplete);*/
    $scope.data={};
-   if( typeof isSetupComplete!='undefined' && !Boolean(isSetupComplete)){
+   if(!Boolean(isSetupComplete) || isSetupComplete.length==0){
           //adding popup 
          var myPopup = $ionicPopup.show({
                 template: '',
@@ -170,7 +170,7 @@
                 // StorageServiceForToken.add("add more") ; 
                  //localStorage.setItem("access_token",$scope.oauthData.access_token);
                  ref.close();
-                 alert("Token received:"+ JSON.stringify($scope.oauthData.access_token));
+                // alert("Token received:"+ JSON.stringify($scope.oauthData.access_token));
 
                  //Persisting the token data in local storage
                  //StorageServiceForToken.remove($scope.oauthData);
@@ -1006,30 +1006,37 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
   })
 
      
-  .controller('redeemVoucherCtrl', function ($scope, $stateParams,$state, voucherService, $ionicPopup) {
+  .controller('redeemVoucherCtrl', function ($scope, $stateParams,$state, voucherService, $ionicPopup,getAllAccountsDetailsService) {
    // ScratchCard(document.getElementById('sceatchable'));
+
+
+    var accPromise = getAllAccountsDetailsService.getAllAccounts();
+    accPromise.then(function(data) {
+      $scope.allAccounts = data.data.response;
+    });
+
+
+    $scope.toAccount = '';
+    $scope.amount = '';
+    //$scope.voucherCode ='';
     $scope.redeemVoucher =  function(){
     var redeemVoucherObj=    {
-                              "redeemedTo":[
-                              {
-                                    "bankId":"BARCGB",
-                                    "accountId":this.account,
-                               "value":{
-                                  "currency":"GBP",
-                                  "amount":"400"
-                                }
-                                }],
-                              "description":"gift vocher",
-                              "amount":{
-                                  "currency":"GBP",
-                                  "amount":"400"
-                                },
+                                "code": this.voucherCode,
+                                "redeemedTo":[
+                                  {
+                                      "bankId":"BARCGB",
+                                      "accountId":$( "#toAccount option:selected" ).val(),
+                                       "value":{
+                                          "currency":"GBP",
+                                          "amount":$( "#amount" ).val()
+                                        }
+                                    }
+                                ]
                                 
-                                   "code": this.voucherCode
                               };
       //calling the voucher service to redeem the voucher
       voucherService.redeemVoucher(redeemVoucherObj);
-    }
+    };
   })
 
 
@@ -1105,14 +1112,50 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
       }
   })
      
-  .controller('insightsCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+  .controller('insightsCtrl', ['$scope', '$stateParams', 'InsightsService', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
   // You can include any angular dependencies as parameters for this function
   // TIP: Access Route Parameters for your page via $stateParams.parameterName
-  function ($scope, $stateParams) {
+  
+  function ($scope, $stateParams, InsightsService) {
 
+      $scope.insights = {};
+            /*"status": "SUCCESS",
+            "response": [
+              {
+                "insightId": null,
+                "value": "15.0",
+                "unit": "AVG",
+                "description": "Users at your age group spend on food 15.0"
+              },
+              {
+                "insightId": null,
+                "value": "23.0",
+                "unit": "AVG",
+                "description": "Users at your age group spend on entertainment 23.0"
+              }
+            ],
+            "version": "1"
+          };*/
+
+      $scope.cards = [];
+      $scope.cardTypes = [];
       var pics = ['img/insight1.jpg', 'img/insight2.jpg', 'img/insight3.jpg', 'img/insight4.jpg', 'img/insight5.jpg'];
 
-          var cardTypes = [{
+      var promise = InsightsService.getAllInsights();
+      promise.then(function(data) {
+          $scope.insights = data.data.response;
+          for(var idx=0;idx<$scope.insights.length;idx++){
+
+            var insight = $scope.insights[idx];
+            var card = {
+                desc: insight.description,
+                image: pics[Math.floor(Math.random()*pics.length)]
+            };
+            cardTypes.push(card);
+          }
+      });
+
+          /*var cardTypes = [{
             title: 'Insight1',
             desc: 'details of Insight1',
             image: pics[Math.floor(Math.random()*pics.length)]
@@ -1133,8 +1176,10 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
             desc: 'details of Insight5',
             image: pics[Math.floor(Math.random()*pics.length)]
           }];
+*/
+          
 
-          $scope.cards = Array.prototype.slice.call(cardTypes, 0, 0);
+          $scope.cards = Array.prototype.slice.call($scope.cardTypes, 0, 0);
 
           $scope.cardSwiped = function(index) {
             $scope.addCard();
@@ -1155,8 +1200,7 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
             card.swipe();
           };
 
-  }])
-     
+  }])   
   .controller('smartToolsCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
   // You can include any angular dependencies as parameters for this function
   // TIP: Access Route Parameters for your page via $stateParams.parameterName
