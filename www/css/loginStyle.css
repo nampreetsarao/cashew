@@ -8,15 +8,10 @@
     url("//db.onlinewebfonts.com/t/7c788b44d11f39dd0f368e94c9665c70.svg#Amarante") format("svg");
 }
 .cashewLogo{
-	  background-image: url(cashews.png);
-    background-size: 21%;
-    background-repeat: no-repeat;
-    background-position: center;
-    margin: auto;
-    /* height: 80px; */
-    margin-top: 14%;
-    /* width: 50%; */
-    height: 18%;
+	   margin: auto;
+    display: block;
+    padding-top: 5%;
+    padding-bottom: 2%;
 }
 .cashewName{
   font-family: "Amarante";
