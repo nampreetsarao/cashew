@@ -1,12 +1,32 @@
 
+@font-face {font-family: "Amarante";
+    src: url("//db.onlinewebfonts.com/t/7c788b44d11f39dd0f368e94c9665c70.eot");
+    src: url("//db.onlinewebfonts.com/t/7c788b44d11f39dd0f368e94c9665c70.eot?#iefix") format("embedded-opentype"),
+    url("//db.onlinewebfonts.com/t/7c788b44d11f39dd0f368e94c9665c70.woff2") format("woff2"),
+    url("//db.onlinewebfonts.com/t/7c788b44d11f39dd0f368e94c9665c70.woff") format("woff"),
+    url("//db.onlinewebfonts.com/t/7c788b44d11f39dd0f368e94c9665c70.ttf") format("truetype"),
+    url("//db.onlinewebfonts.com/t/7c788b44d11f39dd0f368e94c9665c70.svg#Amarante") format("svg");
+}
 .cashewLogo{
-	background-image: url("cashew.png");
-    background-size: 270px;
-    background-repeat: no-repeat;
-    background-position: center;
-    margin: auto;
-    height: 80px;
-    margin-top: 20%;
+	   margin: auto;
+    display: block;
+    padding-top: 5%;
+    padding-bottom: 2%;
+}
+.cashewName{
+  font-family: "Amarante";
+  color: white;
+  margin: auto;
+  text-align: center;
+  font-size: 700%;
+  margin-bottom: 5%;
+  margin-top: 1%;
+}
+.ibmLogo{
+  height: 20px;
+    margin-left: 0px;
+    padding-top: 0px;
+    margin-top: -1px;
 }
 .bg_login{
 	background-image: url("3dBox.jpg");
