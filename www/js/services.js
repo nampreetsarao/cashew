@@ -5,7 +5,7 @@ angular.module('app-constants', [])
 .constant("portForSignup", "8084")
 .constant("baseURL","/cashewapi")
 .constant("baseURLForOAuth","/bigoauth2server")
-.constant("token","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjI2YTllNWQwLTRlMGMtNDhkMC04ZmQ4LWNhN2ZkOWYwZTA1ZiIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NzM1NjI5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjY0NmE1MzZkLWFiMGUtNGMwMS1hNzJiLTVjNGEyOTkzMmVmMyIsImNsaWVudF9pZCI6IjI2YTllNWQwLTRlMGMtNDhkMC04ZmQ4LWNhN2ZkOWYwZTA1ZiJ9.wM3PHz5kiKKzSzxkC35bQr8MS5tXKmuDDsLUzlpBGp8")
+.constant("token","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjI2YTllNWQwLTRlMGMtNDhkMC04ZmQ4LWNhN2ZkOWYwZTA1ZiIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NzQ0MTQ0LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjM2NDIzMWI2LTAzZTAtNDQ3OS04ZjIzLWVmZWJiOGY4ZDJlNyIsImNsaWVudF9pZCI6IjI2YTllNWQwLTRlMGMtNDhkMC04ZmQ4LWNhN2ZkOWYwZTA1ZiJ9.pcpt18XM9W6laIN1f0zG32cD8uXLGE4nNMzTHAfzeis")
 
 .factory('constantService', function ($http, server, port, baseURL, baseURLForOAuth, portForSignup,token) {
     return {
@@ -458,7 +458,7 @@ angular.module('app.services', ['app-constants'])
 
 
 //Account and account details Service
-.service('accountTransactionAPI', function($http, $q, constantService, StorageServiceForToken){
+.service('accountTransactionAPI', function($http, $q, constantService, StorageServiceForToken, $ionicLoading){
   var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjQ5NzM5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjI3ZjQ3MDVhLWU5NzQtNDJmMi1iY2Q5LTQzZTk5YjA5M2EwZSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.CGrIDlpkbgvNjS4vDjnXfiVXfLd3yA-6OhzQQUojUOg';
     var oauthData = StorageServiceForToken.getAll();
     oauthData =constantService.token;
@@ -505,6 +505,21 @@ angular.module('app.services', ['app-constants'])
           });
     });
   }
+
+  this.createTransactionRequest = function(fromAcc, makePaymentObj, $ionicPopup){
+
+      $http.post("http://inmbz2239.in.dst.ibm.com:8085/cashewapi/iceman@gmail.com/IBMGB/"+fromAcc+"/payment", makePaymentObj, {
+        }).success(function(responseData) {
+            //do stuff with response
+            $ionicLoading.hide();
+            console.log('Success', responseData);
+            var alertPopup = $ionicPopup.alert({
+            title: 'Make a Payment',
+            template:'Transaction successfully submitted.'
+          });
+        })
+        
+    }; 
 
   /*
     consolidated account transaction distribution details chart
@@ -889,15 +904,17 @@ angular.module('app.services', ['app-constants'])
     this.getPayeeAccounts = function() {
       $ionicLoading.show(); 
       var allAccountDetails=[];
+      $http.defaults.headers.common.Authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NzI5NDg5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImEwNmQyYmY3LWNiMDgtNGY2ZS04NjJhLThmZmNlNTVhNWM3MSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.anIkVxZAWXlutyaMo_bL0IAi1jIO-bk2B6hZfe7OPYQ';
       var authorizationToken = '';
       var oauthData = StorageServiceForToken.getAll();
-      if(oauthData!=null && oauthData.length>0){
-          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      oauthData =constantService.token;
+      if(oauthData!=null ){
+          authorizationToken = 'Bearer '+ oauthData;
       }else{
         allAccountDetails='First authenticate and then make this call.';
       }
       //$http.defaults.headers.common.Authorization=authorizationToken;
-      $http.defaults.headers.common.Authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NzI5NDg5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImEwNmQyYmY3LWNiMDgtNGY2ZS04NjJhLThmZmNlNTVhNWM3MSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.anIkVxZAWXlutyaMo_bL0IAi1jIO-bk2B6hZfe7OPYQ';
+      $http.defaults.headers.common.Authorization=authorizationToken;
       //alert('http://'+constantService.server+':'+constantService.port+'/psd2api/my/banks/BARCGB/accounts');
       $http.get('http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/iceman@gmail.com/IBMGB/7278/payees').then(function(resp){
           console.log('Success', resp); // JSON object

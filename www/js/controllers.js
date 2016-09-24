@@ -684,10 +684,10 @@
             var y = (accountTranData[0].buckets[i].aggregations[j].value*-1).toString();
           }
           else{
-            var y = accountTranData[0].buckets[i].aggregations[j].value;
+            var y = accountTranData[0].buckets[i].aggregations[j].value;  
           }
+          
           sumAmt = parseInt(sumAmt) + parseInt(y);
-          $scope.totalAmount = sumAmt;
           var obj = {
             "key": k,
             "y": y
@@ -715,8 +715,8 @@
         }
       };
       //loop for names from bucket, which to take only once
-      for(var h=0;h<accountTranData[0].buckets[0].aggregations.length;h++){
-        accountTranSeries.push(accountTranData[0].buckets[0].aggregations[h].name);            
+      for(var h=0;h<accountTranData[0].buckets[h].aggregations.length;h++){
+        accountTranSeries.push(accountTranData[0].buckets[h].aggregations[h].name);            
       }
       $scope.accountTranLabel = accountTranLabel;
       $scope.accountTranSeries = accountTranSeries;         
@@ -745,7 +745,8 @@
           detailsDescription : accountTransData[i].details.description,
           detailsValue : accountTransData[i].details.value.amount,
           postedDate : accountTransData[i].details.completed,
-          tag: accountTransData[i].details.tag
+          tag: accountTransData[i].details.tag,
+          transactionId: accountTransData[i].id 
         };
         accountTransDataList.push(accountTransactionsStruc);
       }
