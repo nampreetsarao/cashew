@@ -1227,6 +1227,11 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
         $state.go('menu.createReminder');
 
       }
+
+      $scope.makePaymentFromReminder =  function(reminderId){
+        $state.go('menu.moveMoney');
+
+      }
   })
      
   .controller('insightsCtrl', ['$scope', '$stateParams', 'InsightsService', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller

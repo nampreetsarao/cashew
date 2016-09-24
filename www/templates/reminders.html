@@ -21,7 +21,7 @@
                       <i class="icon ion-edit"></i>
                     </a>
                   Date: {{group.reminderDate | date:'dd-M-yyyy'}}
-                 <button id="makeAPayment-button4" class=" button button-positive  button-block " ng-click="" ng-if="group.amount">Make a Payment</button> 
+                 <button id="makeAPayment-button4" class=" button button-positive  button-block " ng-click="makePaymentFromReminder()" ng-if="group.amount">Make a Payment</button> 
               </ion-item>
             </div>
           </ion-list>

@@ -311,7 +311,7 @@ angular.module('app.services', ['app-constants'])
         'Content-Type': 'application/json',
         'Authorization': authorizationToken,
         'fromDate': '2016-10-08T00:00:00.000+0530',
-        'toDate': '2016-10-08T00:00:00.000+0530'
+        'toDate': '2016-10-09T00:00:00.000+0530'
         }}).then(function(result) {
           console.log('Success', result); 
           voucherDetails=result;
@@ -405,7 +405,7 @@ angular.module('app.services', ['app-constants'])
           $ionicLoading.hide();
           var alertPopup = $ionicPopup.alert({
             title: 'Error deleting reminder',
-            template:'Error occured while calling the API:'+err+"."
+            template:'Error occured while calling the API:'+JSON.stringify(err)+"."
           });
        });
         return deferred.promise;
