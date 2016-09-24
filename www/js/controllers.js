@@ -1,56 +1,59 @@
   angular.module('app.controllers', [])
-    
-  .controller('tilesCtrl', ['$scope', '$stateParams', '$state', 'getAllAccountsDetailsService','StorageService','profileService','$ionicPopup', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
-  // You can include any angular dependencies as parameters for this function
-  // TIP: Access Route Parameters for your page via $stateParams.parameterName
-  function ($scope, $stateParams, $state, getAllAccountsDetailsService,StorageService,profileService, $ionicPopup) {
+  
+     
+  .controller('tilesCtrl',  function ($scope, $stateParams, $state, getAllAccountsDetailsService,StorageServiceForToken,StorageService,profileService, $ionicPopup,StorageServiceForIsSetup,accountTransactionAPI) {
+    // StorageServiceForToken.remove("will this ");
+    // StorageServiceForToken.add("will this ") ;
 
-   
    $scope.allAccounts = {};
-      //calling all Accounts    
+   //calling all Accounts    
 
     var promise = getAllAccountsDetailsService.getAllAccounts();
     promise.then(function(data) {
         $scope.allAccounts = data;
     });
      
-    //adding the profile information in the local storage
-   var promise2 =profileService.getProfile();
+   // adding the profile information in the local storage
+   var promise2 =profileService.getProfile("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6Ijg0MDg4YTMzLWUxODktNDQyZC1iNGZlLTAyNjliMDZhZGViMCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NzAxOTcyLCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImMxMGVmMTU0LTdkNzAtNDRlOS1iNzM2LTQ0NGQwZTY0ODBkMyIsImNsaWVudF9pZCI6Ijg0MDg4YTMzLWUxODktNDQyZC1iNGZlLTAyNjliMDZhZGViMCJ9.IAfykQyVZlShwUe9a2GbjDhkzeoNY-ji8quhHmPlJTg");
    promise2.then(function(data) {
         $scope.profileData = data;
     });
 
-   StorageService.remove($scope.profileData);
-   StorageService.add($scope.profileData);
+   // StorageService.remove($scope.profileData);
+   // StorageService.add($scope.profileData);
+
+   var isSetupComplete= StorageServiceForIsSetup.getAll();
+   alert("is setup complete:"+isSetupComplete);
    $scope.data={};
+   if( typeof isSetupComplete!='undefined' && !Boolean(isSetupComplete)){
+          //adding popup 
+         var myPopup = $ionicPopup.show({
+                template: '',
+                title: 'Here for the first time?',
+                subTitle: 'Looks like you are here for the first time, lets set you up!!',
+                scope: $scope,
+                buttons: [
+                  
+                  {
+                    text: '<b>Ok</b>',
+                    type: 'button-positive',
+                    onTap: function(e) {
+                      if (!$scope.data.wifi) {
+                        //don't allow the user to close unless he enters wifi password
+                        //e.preventDefault();
+                      } else {
+                        return $scope.data.wifi;
+                      }
+                    }
+                  }
+                ]
+        });
 
-   //adding popup 
-   var myPopup = $ionicPopup.show({
-          template: '',
-          title: 'Here for the first time?',
-          subTitle: 'Looks like you are here for the first time, lets set  you up!!',
-          scope: $scope,
-          buttons: [
-            
-            {
-              text: '<b>Ok</b>',
-              type: 'button-positive',
-              onTap: function(e) {
-                if (!$scope.data.wifi) {
-                  //don't allow the user to close unless he enters wifi password
-                  //e.preventDefault();
-                } else {
-                  return $scope.data.wifi;
-                }
-              }
-            }
-          ]
-  });
-
-  myPopup.then(function(res) {
-      $state.go('menu.subscription');
-          
-  });
+        myPopup.then(function(res) {
+            StorageServiceForIsSetup.add(true);
+            $state.go('menu.subscription');
+        });
+   }
    /*
       consolidated user bank account details
       API : Get User's Bank Account Details
@@ -115,7 +118,7 @@
     });
   	
 
-  }])
+  })
      
   .controller('cartCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
   // You can include any angular dependencies as parameters for this function
@@ -142,16 +145,17 @@
   }])
      
   //OAuth implementation for login
-  .controller('loginCtrl', function($scope, OAuthService,$http, $state,$interval, $cordovaInAppBrowser,StorageServiceForToken, $ionicPopup) {
+  .controller('loginCtrl', function( $rootScope,$scope, StorageServiceForToken,OAuthService,profileService,$http, profileInfoService, $state,$interval, $cordovaInAppBrowser, $ionicPopup) {
       
       $scope.loginOAuth =  function(){
         // cordova.InAppBrowser
-      var ref =cordova.InAppBrowser.open('http://inmbz2239.in.dst.ibm.com:8084/bigoauth2server/oauth/authorize?client_id=4a4b0281-49b1-4533-b3ac-eee11f1f6bd8&redirect_uri=http://localhost/callback&scope=read&response_type=code', '_blank', 'location=no,clearsessioncache=yes,clearcache=yes,toolbar=yes');
+      var ref =cordova.InAppBrowser.open('http://169.46.157.198:8084/bigoauth2server/oauth/authorize?client_id=84088a33-e189-442d-b4fe-0269b06adeb0&redirect_uri=http://localhost/callback&scope=read&response_type=code', '_blank', 'location=no,clearsessioncache=yes,clearcache=yes,toolbar=yes');
       ref.addEventListener('loadstart', function(event) {
       //alert('event url'+event.url);
       if ((event.url).startsWith("http://localhost/callback")) {
             $scope.requestToken = (event.url).split("code=")[1];
             $scope.oAuth=[];
+            $scope.oauthData = {};
            //Fetch general Information details from the API
            OAuthService.general(
                {
@@ -162,12 +166,22 @@
               },{},
               function(message) {
                  $scope.oauthData=message;
+                 profileInfoService.setToken($scope.oauthData.access_token);
+                // StorageServiceForToken.add("add more") ; 
+                 //localStorage.setItem("access_token",$scope.oauthData.access_token);
                  ref.close();
-                 alert("Token received:"+ JSON.stringify($scope.oauthData));
+                 alert("Token received:"+ JSON.stringify($scope.oauthData.access_token));
 
                  //Persisting the token data in local storage
-                 StorageServiceForToken.remove($scope.oauthData);
-                 StorageServiceForToken.add($scope.oauthData) ;
+                 //StorageServiceForToken.remove($scope.oauthData);
+                 StorageServiceForToken.remove(message.access_token);
+                 StorageServiceForToken.add(message.access_token);
+                 // var promise2 =profileService.getProfile(message.access_token);
+                 // promise2.then(function(data) {
+                 //  $scope.profileData = data;
+                 //  });
+
+
                  $state.go('menu.tiles');             
               },function(message) {
                 //alert("failure:"+ JSON.stringify(message));
@@ -1202,7 +1216,7 @@ $scope.cId = "";
 
 
       //dummyService
-    var promise = subscriptionService.subscribeUser("nisha.bhagdev@gmail.com",subscriptionObj);
+    var promise = subscriptionService.subscribeUser("iceman@gmail.com",subscriptionObj);
       promise.then(function(data) {
           $scope.subscriptionResp = data;
           $scope.answerChallenge=true;
@@ -1240,7 +1254,7 @@ $scope.cId = "";
 
       myPopup.then(function(res) {
      
-          var userId="nisha.bhagdev@gmail.com";
+          var userId="iceman@gmail.com";
           subscriptionService.answerSubscriptionChallenge(userId, $scope.challengeObj)
               
       });
