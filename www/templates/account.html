@@ -1,4 +1,4 @@
-<ion-view style="" id="page7" title="Account" hide-back-button="true">
+<ion-view style="" id="page7" title="Account" hide-back-button="true" cache-view="false">
     <ion-content class="has-header" padding="true">
         <ion-slide-box style="height:50%;" class="tile tile-double hovereffect">
             <ion-slide>
@@ -12,8 +12,8 @@
             </ion-slide>
         </ion-slide-box>
         <div class="spacer" style="width: 250px; height: 300px;"></div>
-        <button class="button button-balanced  button-block" style="border-radius:10px 10px 10px 10px;" id="account-button8">Total Balance : {{consildatedAmount}}</button>
-        <button class="button button-positive  button-block" style="border-radius:10px 10px 10px 10px;" id="account-button9">Assets: 2,50,000</button>
+        <!-- <button class="button button-balanced  button-block" style="border-radius:10px 10px 10px 10px;" id="account-button8">Total Balance : {{consildatedAmount}}</button> -->
+        <button class="button button-positive  button-block" style="border-radius:10px 10px 10px 10px;" id="account-button9">Assets: {{consildatedAmount}}</button>
         <button class="button button-assertive  button-block" style="border-radius:10px 10px 10px 10px;" id="account-button10">Liability: -1,00,000</button>
         <ion-list show-delete="false" can-swipe="true">
            <ion-item ng-repeat="i in allAccountTransactionsList">
@@ -21,7 +21,9 @@
                 <div class="input-label card" style="color: black; font-weight: 600; width:100%;">
                     Description: {{i.detailsDescription}}<br>Amount : {{i.detailsValue}}<br>Date: {{i.postedDate | date : "dd/MM/y"}}                    
                 </div>
-                <button class="button button-balanced card" ng-hide="i.tag != undefined" style="height:10px;border-radius:80px 80px 80px 80px;" id="account-button8" ng-click="showTagPopup()">?</button>
+                <div ng-controller="tagsCtrl">
+                <button class="button button-balanced card" ng-hide="i.tag != undefined" style="height:10px;border-radius:80px 80px 80px 80px;" id="account-button8" ng-click="addTagTransactionPopup(i.id, i.bankName, i.transactionId)">?</button>
+                </div>
                 <ion-delete-button class="ion-minus-circled" ng-click="deleteItem(i)"></ion-delete-button>
            </ion-item>
         </ion-list>

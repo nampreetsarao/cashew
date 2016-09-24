@@ -231,42 +231,19 @@
     
     
 .controller('accountCtrl', function ($scope, $stateParams,$ionicPopup, accountTransactionAPI) {
-  //showing popup for creating new custom tag
-    $scope.showTagPopup = function() {
-    $scope.data = {};
-      // An elaborate, custom popup
-      var myPopup = $ionicPopup.show({
-        template: '<label class="item item-input card" id="dashboard-input10" style="border-radius:10px 10px 10px 10px;width:90%;"><span class="input-label" style="font-weight:500;font-size:15px;text-align:left;">Tag Name</span><input type="text" placeholder="" ng-model="data.tagName"></label>'+
-                  '<div class="spacer " style="width: 100%;"></div><label class="item item-input card" id="dashboard-input11" style="border-radius:10px 10px 10px 10px;width:90%;"><span class="input-label" style="font-weight:500;font-size:15px;text-align:left;">Spent Limit</span><input type="number" placeholder="" ng-model="data.spentLimit"></label>',
-        title: 'Create New Tag',
-        subTitle: '',
-        scope: $scope,
-        buttons: [
-          { text: 'Cancel' },
-          {
-            text: '<b>Submit</b>',
-            type: 'button-positive',
-            onTap: function(e) {
-            //Calling Add tag api
-              //$scope.AllChrts($scope.data.sprintNo, $scope.data.projectSelect);
-            }
-          }
-        ]
-      });
-    }
-
   /*
     Consolidated account transaction data
     API : Get User's Bank Account Transactions
     Service : accountTransactions
   */
-  $scope.allAaccountTransactionsData = accountTransactionAPI.allAccountTransactions()
+  $scope.allAccountTransactionsData = accountTransactionAPI.allAccountTransactions()
     .then(function(allAccountTransData){
       var allAccountTransDataList = [];
       for(var i=0;i<allAccountTransData.length;i++){
         var allAccountTransactionsStruc={
-          id : allAccountTransData[i].to.accountId,
-          bankName : allAccountTransData[i].to.bankId,
+          id : allAccountTransData[i].from.accountId,
+          transactionId: allAccountTransData[i].id,
+          bankName : allAccountTransData[i].from.bankId,
           detailsDescription : allAccountTransData[i].details.description,
           detailsValue : allAccountTransData[i].details.value.amount,
           postedDate : allAccountTransData[i].details.completed,
@@ -275,7 +252,7 @@
         allAccountTransDataList.push(allAccountTransactionsStruc);
       }
       $scope.allAccountTransactionsList = allAccountTransDataList;
-
+      
     }, function(err){
     var alertPopup = $ionicPopup.alert({
       title: 'Search Failed!',
@@ -306,7 +283,13 @@
         var len = new Date(allAccountAvgTranData[0].buckets[i].key_as_string).getDate();
          //loop for getting value with bucket                  
           for(var j=0;j<allAccountAvgTranData[0].buckets[i].aggregations.length;j++){
-            a.splice(len,0,allAccountAvgTranData[0].buckets[i].aggregations[j].value);
+            if(allAccountAvgTranData[0].buckets[i].aggregations[j].value<0){
+              a.splice(len,0,(allAccountAvgTranData[0].buckets[i].aggregations[j].value*-1).toString());
+            }
+            else{
+              a.splice(len,0,allAccountAvgTranData[0].buckets[i].aggregations[j].value);
+            }
+            
           }
       }
       /*//loop for names from bucket, which to take only once
@@ -349,7 +332,13 @@
           for(var j=0;j<allAccountAvgMonthTranData[0].buckets[i].aggregations.length;j++){
             
             //a.push(allAccountAvgTranData[0].buckets[i].aggregations[j].value);
-            b.splice(len,0,allAccountAvgMonthTranData[0].buckets[i].aggregations[j].value);
+            if(allAccountAvgMonthTranData[0].buckets[i].aggregations[j].value<0){
+              b.splice(len,0,(allAccountAvgMonthTranData[0].buckets[i].aggregations[j].value*-1).toString());
+            }
+            else{
+              b.splice(len,0,allAccountAvgMonthTranData[0].buckets[i].aggregations[j].value);
+            }
+            
           }
           //adding last 30 days avg (from above function) and current month data together
           aggArrayAvgVal.push(a, b);
@@ -387,8 +376,13 @@
         //for(var j=0;j<allBankAccountData[0].buckets[i].aggregations.length;j++){
           a.push(allBankAccountData[i].balance.amount);  
           var k = allBankAccountData[i].bankId;
-          var y = allBankAccountData[i].balance.amount;
-          sumAmt = parseInt(sumAmt) + parseInt(allBankAccountData[i].balance.amount);
+          if(allBankAccountData[i].balance.amount<0){
+            var y = (allBankAccountData[i].balance.amount*-1).toString();
+          }
+          else{
+            var y = allBankAccountData[i].balance.amount;
+          }          
+          sumAmt = parseInt(sumAmt) + parseInt(y);
           $scope.consildatedAmount = sumAmt
           var obj = {
             "key": k,
@@ -450,8 +444,14 @@
         for(var j=0;j<allAccountTranData[0].buckets[i].aggregations.length;j++){
           a.push(allAccountTranData[0].buckets[i].aggregations[j].value);  
           var k = allAccountTranData[0].buckets[i].key_as_string;
-          var y = allAccountTranData[0].buckets[i].aggregations[j].value;
-          sumAmt = parseInt(sumAmt) + parseInt(allAccountTranData[0].buckets[i].aggregations[j].value);
+          if(allAccountTranData[0].buckets[i].aggregations[j].value<0){
+            var y = (allAccountTranData[0].buckets[i].aggregations[j].value*-1).toString();
+          }
+          else{
+            var y = allAccountTranData[0].buckets[i].aggregations[j].value;  
+          }
+          
+          sumAmt = parseInt(sumAmt) + parseInt(y);
           var obj = {
             "key": k,
             "y": y
@@ -470,7 +470,7 @@
           labelThreshold: 0.01,
           labelSunbeamLayout: true,
           height: 280,
-          width: 250,
+          width: 300,
           title: sumAmt,
           donut: true,
           tooltips: false,
@@ -520,7 +520,12 @@
         var len = new Date(specificAccountAvgTranData[0].buckets[i].key_as_string).getDate();
          //loop for getting value with bucket                  
           for(var j=0;j<specificAccountAvgTranData[0].buckets[i].aggregations.length;j++){
-            a.splice(len,0,specificAccountAvgTranData[0].buckets[i].aggregations[j].value);
+            if(specificAccountAvgTranData[0].buckets[i].aggregations[j].value<0){
+              a.splice(len,0,(specificAccountAvgTranData[0].buckets[i].aggregations[j].value*-1).toString());
+            }
+            else{
+              a.splice(len,0,specificAccountAvgTranData[0].buckets[i].aggregations[j].value);
+            }
           }
       }
       /*//loop for names from bucket, which to take only once
@@ -563,7 +568,12 @@
           for(var j=0;j<specificAccountAvgMonthTranData[0].buckets[i].aggregations.length;j++){
             
             //a.push(allAccountAvgTranData[0].buckets[i].aggregations[j].value);
-            b.splice(len,0,specificAccountAvgMonthTranData[0].buckets[i].aggregations[j].value);
+            if(specificAccountAvgMonthTranData[0].buckets[i].aggregations[j].value<0){
+              b.splice(len,0,(specificAccountAvgMonthTranData[0].buckets[i].aggregations[j].value*-1).toString());
+            }
+            else{
+              b.splice(len,0,specificAccountAvgMonthTranData[0].buckets[i].aggregations[j].value);
+            }
           }
           //adding last 30 days avg (from above function) and current month data together
           aggArrayAvgVal.push(a, b);
@@ -601,8 +611,14 @@
         //for(var j=0;j<allBankAccountData[0].buckets[i].aggregations.length;j++){
           a.push(specificBankAccountData.balance.amount);  
           var k = specificBankAccountData.bankId;
-          var y = specificBankAccountData.balance.amount;
-          sumAmt = parseInt(sumAmt) + parseInt(specificBankAccountData.balance.amount);
+          if(specificBankAccountData.balance.amount<0){
+            var y = (specificBankAccountData.balance.amount*-1).toString();
+          }
+          else{
+            var y = specificBankAccountData.balance.amount;  
+          }
+          
+          sumAmt = parseInt(sumAmt) + parseInt(y);
           $scope.consolidatedAmount = sumAmt
           var obj = {
             "key": k,
@@ -664,8 +680,13 @@
         for(var j=0;j<accountTranData[0].buckets[i].aggregations.length;j++){
           a.push(accountTranData[0].buckets[i].aggregations[j].value);  
           var k = accountTranData[0].buckets[i].key_as_string;
-          var y = accountTranData[0].buckets[i].aggregations[j].value;
-          sumAmt = parseInt(sumAmt) + parseInt(accountTranData[0].buckets[i].aggregations[j].value);
+          if(accountTranData[0].buckets[i].aggregations[j].value<0){
+            var y = (accountTranData[0].buckets[i].aggregations[j].value*-1).toString();
+          }
+          else{
+            var y = accountTranData[0].buckets[i].aggregations[j].value;
+          }
+          sumAmt = parseInt(sumAmt) + parseInt(y);
           $scope.totalAmount = sumAmt;
           var obj = {
             "key": k,
@@ -694,8 +715,8 @@
         }
       };
       //loop for names from bucket, which to take only once
-      for(var h=0;h<accountTranData[0].buckets[h].aggregations.length;h++){
-        accountTranSeries.push(accountTranData[0].buckets[h].aggregations[h].name);            
+      for(var h=0;h<accountTranData[0].buckets[0].aggregations.length;h++){
+        accountTranSeries.push(accountTranData[0].buckets[0].aggregations[h].name);            
       }
       $scope.accountTranLabel = accountTranLabel;
       $scope.accountTranSeries = accountTranSeries;         
@@ -719,8 +740,8 @@
       var accountTransDataList = [];
       for(var i=0;i<accountTransData.length;i++){
         var accountTransactionsStruc={
-          id : accountTransData[i].to.accountId,
-          bankName : accountTransData[i].to.bankId,
+          id : accountTransData[i].from.accountId,
+          bankName : accountTransData[i].from.bankId,
           detailsDescription : accountTransData[i].details.description,
           detailsValue : accountTransData[i].details.value.amount,
           postedDate : accountTransData[i].details.completed,
@@ -741,7 +762,6 @@
  .controller('tagsCtrl', function ($scope, $stateParams, $ionicPopup, getTags, tagService) {
     //showing popup for creating new custom tag
     $scope.addTagPopup = function() {
-      $scope.data = {};
       // An elaborate, custom popup
       var myPopup = $ionicPopup.show({
         templateUrl: 'templates/createTags.html' ,
@@ -760,16 +780,103 @@
                 Service : 
               */
               var tagVal = $scope.data.tagName;
-              $scope.addTag = tagService.addTags(tagVal);
+              var tagStruct = [{
+                name: tagVal,
+                spendLimit: "0"
+              }];
+
+              $scope.addTag = tagService.addTags(tagStruct);
 
                 /*var newButton = document.createElement('button');
                 document.getElementById('addTagButton').appendChild(newButton);*/
-                $("<button class='button button-energized button-small button-inline' style='border: 0.5px solid;height: 100px; width:100px;border-radius:150px 150px 150px 150px;margin:2px 2px 2px 2px;'></button>").insertBefore("#vADD-button100");
+                var a = $scope.data.tagName;
+                var idLimit = "10";
+                var b = idLimit-1;
+                $("<button id='dyna'+b class='button button-energized button-small button-inline' style='border: 0.5px solid;height: 100px; width:100px;border-radius:150px 150px 150px 150px;margin:2px 2px 2px 2px;'></button>").insertBefore("#vADD-button100");
+                $("#dyna").prop('id','b').html(a);
             }
           }
         ]
       });
     }
+
+    $scope.tagTransaction = function(tagvalue){
+      /*
+        Add Tag API Call
+        API : Add Tags
+        Service : 
+      */
+      var tagVal = tagvalue;//$scope.tag1;
+      /*var tagStruct = [{
+        name: tagVal,
+        spendLimit: "0"
+      }];*/
+
+      $scope.addTag = tagService.tagTransactionToApi($scope.tagAccountId, $scope.tagBankId, $scope.tagTransactionId, tagVal);
+      //myPopup.close();
+    }
+
+    //showing popup to tag transactions
+    $scope.addTagTransactionPopup = function(accountId, bankId, transactionId) {
+      $scope.tagAccountId = accountId;
+      $scope.tagBankId = bankId;
+      $scope.tagTransactionId = transactionId;
+
+      // An elaborate, custom popup
+      $scope.myPopup = $ionicPopup.show({
+        templateUrl: 'templates/tagTransaction.html' ,
+        title: 'Tag a Transaction',
+        subTitle: '',
+        scope: $scope,
+        buttons: [
+          { text: 'Cancel' },
+          {
+            text: '<b>Submit</b>',
+            type: 'button-positive',
+            onTap: function(e) {
+              /*
+                Add Tag API Call
+                API : Add Tags
+                Service : 
+              */
+              /*var tagVal = $scope.data.tagName;
+              var tagStruct = [{
+                name: tagVal,
+                spendLimit: "0"
+              }];
+
+              $scope.addTag = tagService.addTags(tagStruct);*/
+
+                /*var newButton = document.createElement('button');
+                document.getElementById('addTagButton').appendChild(newButton);*/
+                var a = $scope.data.tagName;
+                var idLimit = "10";
+                var b = idLimit-1;
+                $("<button id='dyna'+b class='button button-energized button-small button-inline' style='border: 0.5px solid;height: 100px; width:100px;border-radius:150px 150px 150px 150px;margin:2px 2px 2px 2px;'></button>").insertBefore("#vADD-button100");
+                $("#dyna").prop('id','b').html(a);
+            }
+          }
+        ]
+      });      
+    }
+
+    var allTagsOfApp = [];
+    $scope.getUserTags = getTags.getUserAddedTags()
+      .then(function(getAllUserTags){
+        $scope.tagsUserAll = getAllUserTags.tags;
+        console.log($scope.tagsUserAll);
+
+        for(var k=0;k<$scope.tagsUserAll.length;k++){
+          var a = $scope.tagsUserAll[k].name;
+          allTagsOfApp.push(a);
+        }
+      }, function(err){
+        var alertPopup = $ionicPopup.alert({
+          title: 'Search Failed!',
+          template: 'There was some problem with server.'
+        });
+      });
+
     /*
       Getting Tags
       API : tags
@@ -779,6 +886,16 @@
       .then(function(getAllTags){
         $scope.tagsAll = getAllTags;
         console.log($scope.tagsAll);
+        for(var b=0;b<$scope.tagsAll.length;b++){
+          allTagsOfApp.push($scope.tagsAll[b]);
+        }
+        $scope.consolidatedTags = allTagsOfApp;
+        for(var t=0;t<allTagsOfApp.length;t++){
+          var idLimit = "20";
+          var b = idLimit-1;
+          $("<button id='dyna'+b class='button button-energized button-small button-inline' style='border: 0.5px solid;height: 100px; width:100px;border-radius:150px 150px 150px 150px;margin:2px 2px 2px 2px;'></button>").insertBefore("#vADD-button100");
+          $("#dyna").prop('id','b').html(allTagsOfApp[t]);
+        }        
       }, function(err){
         var alertPopup = $ionicPopup.alert({
           title: 'Search Failed!',

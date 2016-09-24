@@ -20,8 +20,9 @@
                 <div class="input-label card" style="color: black; font-weight: 600; width:100%;">
                     Description: {{i.detailsDescription}}<br>Amount : {{i.detailsValue}}<br>Date: {{i.postedDate | date : "dd/MM/y"}}                    
                 </div>
-                <button class="button button-balanced card" ng-hide="i.tag != undefined" style="height:10px;border-radius:80px 80px 80px 80px;" id="account-button8">?</button>
-                <ion-delete-button class="ion-minus-circled" ng-click="deleteItem(i)"></ion-delete-button>
+                <div ng-controller="tagsCtrl">
+                    <button class="button button-balanced card" ng-hide="i.tag != undefined" style="height:10px;border-radius:80px 80px 80px 80px;" id="account-button8" ng-click="addTagTransactionPopup(i.id, i.bankName, i.transactionId)">?</button>
+                </div>
            </ion-item>
         </ion-list>
     </ion-content>

@@ -5,7 +5,7 @@ angular.module('app-constants', [])
 .constant("portForSignup", "8084")
 .constant("baseURL","/cashewapi")
 .constant("baseURLForOAuth","/bigoauth2server")
-.constant("token","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjI2YTllNWQwLTRlMGMtNDhkMC04ZmQ4LWNhN2ZkOWYwZTA1ZiIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NzMxODY2LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjYyMDk1NDYwLWZkMTMtNGFmNS04MDZjLTU5M2Y5MmYwZWY5MiIsImNsaWVudF9pZCI6IjI2YTllNWQwLTRlMGMtNDhkMC04ZmQ4LWNhN2ZkOWYwZTA1ZiJ9.5ZihwTyLfrsJ8rZvQTDyjuKNhnd3QZ-IkswnogAnHgM")
+.constant("token","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjI2YTllNWQwLTRlMGMtNDhkMC04ZmQ4LWNhN2ZkOWYwZTA1ZiIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NzM1NjI5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjY0NmE1MzZkLWFiMGUtNGMwMS1hNzJiLTVjNGEyOTkzMmVmMyIsImNsaWVudF9pZCI6IjI2YTllNWQwLTRlMGMtNDhkMC04ZmQ4LWNhN2ZkOWYwZTA1ZiJ9.wM3PHz5kiKKzSzxkC35bQr8MS5tXKmuDDsLUzlpBGp8")
 
 .factory('constantService', function ($http, server, port, baseURL, baseURLForOAuth, portForSignup,token) {
     return {
@@ -158,7 +158,7 @@ angular.module('app.services', ['app-constants'])
     }else{
       voucherDetails='First authenticate and then make this call.';
     }
-    return $q(function(resolve, reject){
+   return $q(function(resolve, reject){
       var date = new Date();
       var req = {
           url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/tags',
@@ -184,6 +184,45 @@ angular.module('app.services', ['app-constants'])
           });
     });
   }  
+
+  //getUserAddedTags
+  this.getUserAddedTags = function(){
+    var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NzI5NDg5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImEwNmQyYmY3LWNiMDgtNGY2ZS04NjJhLThmZmNlNTVhNWM3MSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.anIkVxZAWXlutyaMo_bL0IAi1jIO-bk2B6hZfe7OPYQ';
+    var oauthData = StorageServiceForToken.getAll();
+    oauthData =constantService.token;
+    if(oauthData!=null ){
+        authorizationToken = 'Bearer '+ oauthData;
+    }else{
+      voucherDetails='First authenticate and then make this call.';
+    }
+    return $q(function(resolve, reject){
+      var date = new Date();
+      var req = {
+          url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/profile',
+            method:'GET',
+            headers : {
+               'Accept' : 'application/json',
+               'Content-Type':'application/json',
+               'Authorization' : authorizationToken,
+            }
+          }
+          $http(req)
+          .then(function(getAllUserAddedTags) {
+            console.log(getAllUserAddedTags);            
+            // function to retrive the response
+            if (getAllUserAddedTags.status == 200) {
+              resolve(getAllUserAddedTags.data.response);
+            } else {
+              reject('Update Expertise Failed!');
+            }
+          },
+          function(err) {
+            reject(err);
+          });
+    });
+  } 
+
+
 })
 
 .service('tagService', function($http, $q, $ionicLoading,$ionicPopup, constantService, StorageServiceForToken,StorageService){
@@ -197,7 +236,28 @@ angular.module('app.services', ['app-constants'])
     }
 
     var profileInformation =StorageService.getAll();
-     //alert("Profile information:"+JSON.stringify(profileInformation)); 
+       this.tagTransactionToApi = function(tagAccountId, tagBankId, tagTransactionId, tagValue){
+      return $q(function(resolve, reject){
+        $http({
+          method: 'PATCH',
+          url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/iceman@gmail.com/'+tagBankId+'/'+tagAccountId+'/transaction/'+tagTransactionId+'/tag/'+tagValue,
+          headers: {
+          'Content-Type': 'application/json',
+          'Authorization': authorizationToken
+          }}).then(function(result) {
+            console.log('Success', result); 
+            
+         }, function(err) {
+            console.error('ERR', err);
+            $ionicLoading.hide();
+            var alertPopup = $ionicPopup.alert({
+              title: 'Error creating voucher',
+              template:'Error occured while calling the API:'+err+"."
+            });
+         })
+      });
+    }
+
     /*
       Add Tags
       API : Add Tags
@@ -226,9 +286,6 @@ angular.module('app.services', ['app-constants'])
     }
 
 })
-
-
-
 
 
 //Reminders  service 
@@ -410,7 +467,8 @@ angular.module('app.services', ['app-constants'])
     }else{
       voucherDetails='First authenticate and then make this call.';
     }
-  /*
+
+     /*
     specific account transaction distribution details chart
     API : Get Transaction Distribution Graph
   */
@@ -712,6 +770,43 @@ angular.module('app.services', ['app-constants'])
     });
   }
   /*
+    specific account Avg. transaction expenses for past 3 months
+    API : Get User Avg Transaction Expense
+  */
+  this.specificAccountAverageTransactionExpenses = function(){
+    return $q(function(resolve, reject){
+      var date = new Date();
+      var req = {
+          url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/iceman@gmail.com/transactions/histogram',
+            method:'GET',
+            headers : {
+               'Accept' : 'application/json',
+               'Content-Type':'application/json', 
+               'Authorization' : authorizationToken,
+               'fromDate' : Date.parse('t - 3m').toString('yyyy-MM-d')+"T00:00:00.000+0530", 
+               'toDate' : (new Date(date.getFullYear(), date.getMonth(), -1)).toString('yyyy-MM-dd')+"T00:00:00.000+0530"
+            },
+              params: {                    
+                  accountId: '7278',
+                  bankId: 'IBMGB'
+                }
+          }
+          $http(req)
+          .then(function(specificAccountAverageTransactionExpensesData) {
+            console.log(specificAccountAverageTransactionExpensesData);            
+            // function to retrive the response
+            if (specificAccountAverageTransactionExpensesData.status == 200) {
+              resolve(specificAccountAverageTransactionExpensesData.data.response);
+            } else {
+              reject('Update Expertise Failed!');
+            }
+          },
+          function(err) {
+            reject(err);
+          });
+    });
+  }
+  /*
     specific Avg. transaction expenses for this month
     API : Get User Avg Transaction Expense
   */
@@ -752,26 +847,25 @@ angular.module('app.services', ['app-constants'])
 
 
 //get All Account details service
-.service('getAllAccountsDetailsService', function($state,$http,$q,$ionicLoading,constantService,profileInfoService, StorageServiceForToken,$ionicPopup) {
+.service('getAllAccountsDetailsService', function($state,$http,$q,$ionicLoading,constantService,StorageServiceForToken,$ionicPopup) {
     
+    //$http.defaults.headers.common.Authorization=authorizationToken;
+      $http.defaults.headers.common.Authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NzI5NDg5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImEwNmQyYmY3LWNiMDgtNGY2ZS04NjJhLThmZmNlNTVhNWM3MSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.anIkVxZAWXlutyaMo_bL0IAi1jIO-bk2B6hZfe7OPYQ';
+
     //to fetch all acounts
     var accDeferred = $q.defer();
     this.getAllAccounts = function() {
       $ionicLoading.show(); 
       var allAccountDetails=[];
       var authorizationToken = '';
-      //var oauthData = StorageServiceForToken.getAll();
-      var oathData = profileInfoService.getToken();
+      var oauthData = StorageServiceForToken.getAll();
       oauthData =constantService.token;
-      //alert("oathData: "+JSON.stringify(oathData));
       if(oauthData!=null ){
           authorizationToken = 'Bearer '+ oauthData;
       }else{
-        allAccountDetails='First authenticate and then make this call.';
+        voucherDetails='First authenticate and then make this call.';
       }
-      //$http.defaults.headers.common.Authorization=authorizationToken;
-      $http.defaults.headers.common.Authorization=authorizationToken;
-
+      $http.defaults.headers.common.Authorization=authorizationToken;      
       //alert('http://'+constantService.server+':'+constantService.port+'/psd2api/my/banks/BARCGB/accounts');
       $http.get('http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/iceman@gmail.com/accounts').then(function(resp){
           console.log('Success', resp); // JSON object
@@ -783,7 +877,7 @@ angular.module('app.services', ['app-constants'])
           $ionicLoading.hide();
           var alertPopup = $ionicPopup.alert({
             title: 'Show all accounts: Alert',
-            template:'Error occured while calling the API:'+JSON.stringify(err)+".Oauth token:"+oauthData
+            template:'Error occured while calling the API:'+err
           });
         });
         return accDeferred.promise;
@@ -797,14 +891,13 @@ angular.module('app.services', ['app-constants'])
       var allAccountDetails=[];
       var authorizationToken = '';
       var oauthData = StorageServiceForToken.getAll();
-      oauthData =constantService.token;
-      if(oauthData!=null){
-          authorizationToken = 'Bearer '+ oauthData;
+      if(oauthData!=null && oauthData.length>0){
+          authorizationToken = 'Bearer '+ oauthData[0].access_token;
       }else{
         allAccountDetails='First authenticate and then make this call.';
       }
       //$http.defaults.headers.common.Authorization=authorizationToken;
-      $http.defaults.headers.common.Authorization=authorizationToken;
+      $http.defaults.headers.common.Authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NzI5NDg5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImEwNmQyYmY3LWNiMDgtNGY2ZS04NjJhLThmZmNlNTVhNWM3MSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.anIkVxZAWXlutyaMo_bL0IAi1jIO-bk2B6hZfe7OPYQ';
       //alert('http://'+constantService.server+':'+constantService.port+'/psd2api/my/banks/BARCGB/accounts');
       $http.get('http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/iceman@gmail.com/IBMGB/7278/payees').then(function(resp){
           console.log('Success', resp); // JSON object
@@ -816,7 +909,7 @@ angular.module('app.services', ['app-constants'])
           $ionicLoading.hide();
           var alertPopup = $ionicPopup.alert({
             title: 'Show all accounts: Alert',
-            template:'Error occured while calling the API:'+JSON.stringify(err)
+            template:'Error occured while calling the API:'+err
           });
         });
         return payeeDeferred.promise;
@@ -828,11 +921,10 @@ angular.module('app.services', ['app-constants'])
     this.getReminders = function() {
       $ionicLoading.show(); 
       var voucherDetails='';
-      var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjQ2MjcxLCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImUyOGVhMTg0LWI3ZjAtNGRkYi1iYzdjLTY5MmRmZDFkNWYyMCIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.nt3y5-FaLiKXyiRHcHs_Wq8am0W_gV5VIY_ycXmjAUI';
+      var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NzI5NDg5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImEwNmQyYmY3LWNiMDgtNGY2ZS04NjJhLThmZmNlNTVhNWM3MSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.anIkVxZAWXlutyaMo_bL0IAi1jIO-bk2B6hZfe7OPYQ';
       var oauthData = StorageServiceForToken.getAll();
-      oauthData =constantService.token;
-      if(oauthData!=null ){
-          authorizationToken = 'Bearer '+ oauthData;
+      if(oauthData!=null && oauthData.length>0){
+          authorizationToken = 'Bearer '+ oauthData[0].access_token;
       }else{
         voucherDetails='First authenticate and then make this call.';
       }
@@ -862,6 +954,7 @@ angular.module('app.services', ['app-constants'])
 
 })
 
+
 //get All Insights service
 .service('InsightsService', function($state,$http,$q,$ionicLoading,constantService,StorageServiceForToken,$ionicPopup) {   
 
@@ -870,15 +963,17 @@ angular.module('app.services', ['app-constants'])
     this.getAllInsights = function() {
       $ionicLoading.show(); 
       var allAccountDetails=[];
-      var authorizationToken = '';
+      
+      var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoidGFubWF5LmFtYnJlQGluLmlibS5jb20iLCJzY29wZSI6WyJyZWFkIl0sImV4cCI6MTQ3NDU1NDcyMCwidXNlck5hbWUiOiJ0YW5tYXkuYW1icmVAaW4uaWJtLmNvbSIsInVzZXJJZCI6InRhbm1heS5hbWJyZUBpbi5pYm0uY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6Ijk5ZjIzYWE1LTE5MWMtNGI0Zi04NzcxLWQ3ZTY0Nzk1YzRhZSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.sFm3uBrD0bv_qb2dCFPgDwz24w5-LLAS2znzTmracr8';
       var oauthData = StorageServiceForToken.getAll();
-      if(oauthData!=null && oauthData.length>0){
-          authorizationToken = 'Bearer '+ oauthData[0].access_token;
+      oauthData =constantService.token;
+      if(oauthData!=null ){
+          authorizationToken = 'Bearer '+ oauthData;
       }else{
-        allAccountDetails='First authenticate and then make this call.';
+        voucherDetails='First authenticate and then make this call.';
       }
       //$http.defaults.headers.common.Authorization=authorizationToken;
-      $http.defaults.headers.common.Authorization='Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjQ2MjcxLCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImUyOGVhMTg0LWI3ZjAtNGRkYi1iYzdjLTY5MmRmZDFkNWYyMCIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.nt3y5-FaLiKXyiRHcHs_Wq8am0W_gV5VIY_ycXmjAUI';
+      $http.defaults.headers.common.Authorization=authorizationToken;
 
       //alert('http://'+constantService.server+':'+constantService.port+'/psd2api/my/banks/BARCGB/accounts');
       $http.get('http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/expenseInsightsForAgeGroup').then(function(resp){
