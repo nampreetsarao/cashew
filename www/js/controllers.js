@@ -1,6 +1,6 @@
   angular.module('app.controllers', [])
 
-  .controller('tilesCtrl',  function ($scope, $stateParams, $state, getAllAccountsDetailsService,StorageServiceForToken,StorageService,profileService, $ionicPopup,StorageServiceForIsSetup,accountTransactionAPI) {
+  .controller('tilesCtrl',  function ($scope, $rootScope,$stateParams, $state, getAllAccountsDetailsService,StorageServiceForToken,StorageService,profileService, $ionicPopup,StorageServiceForIsSetup,accountTransactionAPI) {
 
 
    $scope.allAccounts = {};
@@ -12,18 +12,20 @@
     });
      
    // adding the profile information in the local storage
-   var promise2 =profileService.getProfile("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6Ijg0MDg4YTMzLWUxODktNDQyZC1iNGZlLTAyNjliMDZhZGViMCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NzAxOTcyLCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImMxMGVmMTU0LTdkNzAtNDRlOS1iNzM2LTQ0NGQwZTY0ODBkMyIsImNsaWVudF9pZCI6Ijg0MDg4YTMzLWUxODktNDQyZC1iNGZlLTAyNjliMDZhZGViMCJ9.IAfykQyVZlShwUe9a2GbjDhkzeoNY-ji8quhHmPlJTg");
+   var promise2 =profileService.getProfile("dummyToken");
    promise2.then(function(data) {
         $scope.profileData = data;
+        StorageService.remove($scope.profileData);
+       StorageService.add($scope.profileData);
     });
 
-    //StorageService.remove($scope.profileData);
-    //StorageService.add($scope.profileData);
-
-   var isSetupComplete= StorageServiceForIsSetup.getAll();
+   
+  var isSetupComplete= StorageServiceForIsSetup.getAll();
+   //$rootScope.isSetupComplete='';
    //alert("is setup complete:"+isSetupComplete);
    $scope.data={};
    if(!Boolean(isSetupComplete) || isSetupComplete.length==0){
+    //if( !(typeof $rootScope.isSetupComplete != 'undefined')){
           //adding popup 
          var myPopup = $ionicPopup.show({
                 template: '',
@@ -50,7 +52,10 @@
 
         myPopup.then(function(res) {
             StorageServiceForIsSetup.add(true);
+            $rootScope.isSetupComplete='yes';
+            $scope.$broadcast("isSetupComplete","yes");
             $state.go('menu.subscription');
+            
         });
    }
    /*
@@ -148,7 +153,7 @@
       
       $scope.loginOAuth =  function(){
         // cordova.InAppBrowser
-      var ref =cordova.InAppBrowser.open('http://169.46.157.198:8084/bigoauth2server/oauth/authorize?client_id=84088a33-e189-442d-b4fe-0269b06adeb0&redirect_uri=http://localhost/callback&scope=read&response_type=code', '_blank', 'location=no,clearsessioncache=yes,clearcache=yes,toolbar=yes');
+      var ref =cordova.InAppBrowser.open('http://169.46.150.99:8084/bigoauth2server/oauth/authorize?client_id=e842a693-d465-4473-ae02-cb9f5ab0fe35&redirect_uri=http://localhost/callback&scope=read&response_type=code', '_blank', 'location=no,clearsessioncache=yes,clearcache=yes,toolbar=yes');
       ref.addEventListener('loadstart', function(event) {
       //alert('event url'+event.url);
       if ((event.url).startsWith("http://localhost/callback")) {
@@ -169,16 +174,17 @@
                 // StorageServiceForToken.add("add more") ; 
                  //localStorage.setItem("access_token",$scope.oauthData.access_token);
                  ref.close();
-                // alert("Token received:"+ JSON.stringify($scope.oauthData.access_token));
+                 alert("Token received:"+ message.access_token);
 
                  //Persisting the token data in local storage
                  //StorageServiceForToken.remove($scope.oauthData);
-                 StorageServiceForToken.remove(message.access_token);
-                 StorageServiceForToken.add(message.access_token);
-                 // var promise2 =profileService.getProfile(message.access_token);
-                 // promise2.then(function(data) {
-                 //  $scope.profileData = data;
-                 //  });
+                 
+                  // var promise2 =profileService.getProfile(message.access_token);
+                  // promise2.then(function(data) {
+                  //  $scope.profileData = data;
+                  //  StorageServiceForToken.remove(message.access_token);
+                  //  StorageServiceForToken.add(message.access_token);
+                  //  });
 
 
                  $state.go('menu.tiles');             
@@ -1141,7 +1147,7 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
                                 "code": this.voucherCode,
                                 "redeemedTo":[
                                   {
-                                      "bankId":"BARCGB",
+                                      "bankId":"IBMGB",
                                       "accountId":$( "#toAccount option:selected" ).val(),
                                        "value":{
                                           "currency":"GBP",
@@ -1325,13 +1331,89 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
           };
 
   }])   
-  .controller('smartToolsCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
+  
+  .controller('smartToolsCtrl', ['$scope', '$stateParams', '$interval', 'goalsService', 'accountTransactionAPI', 'goalsService', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
   // You can include any angular dependencies as parameters for this function
   // TIP: Access Route Parameters for your page via $stateParams.parameterName
-  function ($scope, $stateParams) {
+  function ($scope, $stateParams, $interval, goalsService, accountTransactionAPI, goalsService) {
+      $scope.aggregations = 0;
+      $scope.totalBalance  = 0;
+      $scope.goalTarget = 400;
 
+      $scope.goalTitle = '';
+      $scope.percentage = 0;
+
+      var fromDate = '2016-09-01T00:00:00.000+0530';
+      var toDate = '2016-09-25T00:00:00.000+0530';
+      var getTransactionAgrPromise = goalsService.getLastTransactions(fromDate, toDate);
+      getTransactionAgrPromise.then(function(data) {
+          $scope.aggregations = parseInt(data.data.response[0].buckets[0].aggregations[0].value) * -1;
+          var spent = $scope.aggregations * 25;
+          var newSpent = spent + parseInt($scope.aggregations * 5);
+
+          var accPromise = accountTransactionAPI.allBankAccountDetails();
+          accPromise.then(function(data){
+              var r = data;
+              for(var i=0;i<r.length;i++){
+                  $scope.totalBalance = $scope.totalBalance + parseInt(r[i].balance.amount);
+              }
+          });
+          var remainingBal = parseInt($scope.totalBalance) - parseInt(newSpent);
+          
+
+          var gpromise = goalsService.getAllGoals();
+          gpromise.then(function(data){
+              var threshold = data.data.response[0].threshold;
+              $scope.goalTarget = parseInt(threshold);
+              $scope.goalTitle = data.data.response[0].description;
+              //$scope.percentage = ((parseInt(remainingBal)*100)/parseInt($scope.goalTarget));
+              $scope.percentage = 100 - ((5*100)/25);
+
+              if(remainingBal - $scope.goalTarget){
+                //good
+                  $("#progressbar").css("border-top",'3px solid green');
+                  $("#goalStatus").html("Bingo..!");
+              }
+              else{
+                //bad
+                  $("#progressbar").css("border-top",'3px solid red');
+                  $("#goalStatus").html("Trouble..!");
+              }
+          });
+      });
+
+      $scope.progressval = 0;
+      /*$scope.stopinterval = null;
+      
+      $scope.updateProgressbar = function()
+      {
+        startprogress();
+        
+      }*/
+      
+      /*function startprogress()
+      {
+        $scope.progressval = 0;
+        
+        if ($scope.stopinterval)
+        {
+          $interval.cancel($scope.stopinterval);
+        }
+        
+        $scope.stopinterval = $interval(function() {
+              $scope.progressval = $scope.progressval + 1;
+               if( $scope.progressval >= 100 ) {
+                     $interval.cancel($scope.stopinterval);
+                    
+                     return;
+                }
+         }, 100);
+      }
+
+      startprogress();*/
 
   }])
+
 
    .controller('creditsCtrl', ['$scope', '$stateParams', // The following is the constructor function for this page's controller. See https://docs.angularjs.org/guide/controller
   // You can include any angular dependencies as parameters for this function

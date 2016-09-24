@@ -250,7 +250,7 @@ body {
 	cursor: pointer
 }
 .water{
-	background-image:url("/img/waves.png");
+	background-image:url("waves.png");
 	background-position:top right;
 	position:absolute;
 	bottom:0px;

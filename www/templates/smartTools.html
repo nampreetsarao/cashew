@@ -1,8 +1,14 @@
-<ion-view style="" id="page15" title="Smart Tools">
-    <ion-content class="has-header" padding="true">
-        <a class="button button-stable button-small icon ion-ios-arrow-back" id="smartTools-button38" ui-sref="menu.tiles"></a>
-        <a class="button button-light button-small button-block icon-right ion-android-add-circle" id="smartTools-button39" ui-sref="menu.tiles"></a>
-        <button class="button button-positive  button-block" id="smartTools-button40">Set Limit</button>
-        <button class="button button-positive  button-block" id="smartTools-button41">Set Milestone</button>
+<ion-view style="" id="page15" title="Smart Tools" hide-nav-bar="true">
+    <ion-content class="has-header">
+    	<div style="text-align:center;"><br/>
+    		<h3 style="color:white;">How am I doing on my Goals!</h3>
+    	</div>
+    	<img src="img/add.png" class="addIcon">
+        <div class="grid__item goalPanel" style='clear: both;'>
+        	<label class="title" >{{ goalTitle }}</label>
+        	<progress id="progressbar" max="100" value="{{ percentage }}"> </progress>
+    		<div id="progressbarlabel">{{ percentage }} %</div>
+        </div>
+        <div id='goalStatusDiv'><label id='goalStatus'></label></div>
     </ion-content>
 </ion-view>
