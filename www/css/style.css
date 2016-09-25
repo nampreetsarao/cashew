@@ -128,4 +128,28 @@
   font-size: 140%;
     color: green;
 }
+
+#transactionsList{
+  background-color:#333;
+}
+
+.transCard, .transItem {
+  background-color: #1f1f1f;
+}
+
+.transTag{
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  background-color: #fffff;
+  width:20%;
+  border-radius:50%;
+  text-align:center;
+  font-size: 48px;
+  padding:50% 0;
+  line-height:0;
+  position:relative;
+  background: #38a9e4;
+  color: white;
+  font-family: Helvetica, Arial Black, sans;
 }

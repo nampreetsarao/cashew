@@ -5,7 +5,7 @@ angular.module('app-constants', [])
 .constant("portForSignup", "8084")
 .constant("baseURL","/cashewapi")
 .constant("baseURLForOAuth","/bigoauth2server")
-.constant("token","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6ImU4NDJhNjkzLWQ0NjUtNDQ3My1hZTAyLWNiOWY1YWIwZmUzNSIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NzUyMDQyLCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImQ4MThlNjQxLWFmOTAtNGI2My1iMGZlLWI0Yzg2NzUyOGM0YiIsImNsaWVudF9pZCI6ImU4NDJhNjkzLWQ0NjUtNDQ3My1hZTAyLWNiOWY1YWIwZmUzNSJ9.TNjjSfnQPkgMIhcI43T2GwQIfTua_-0RF8FZWE0zRgQ")
+.constant("token","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6ImU4NDJhNjkzLWQ0NjUtNDQ3My1hZTAyLWNiOWY1YWIwZmUzNSIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NzgzNTA1LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjVjY2JkOWEyLTBiZTctNGIxYi1iZjAwLWFmZTYyZTBlY2ZlYSIsImNsaWVudF9pZCI6ImU4NDJhNjkzLWQ0NjUtNDQ3My1hZTAyLWNiOWY1YWIwZmUzNSJ9.N1ViX5akqSItOY3Ns9U0RjhIHo9YDFf0W1AxR4W_QE8")
 
 .factory('constantService', function ($http, server, port, baseURL, baseURLForOAuth, portForSignup,token) {
     return {
@@ -148,8 +148,9 @@ angular.module('app.services', ['app-constants'])
 })
 
 //Tag Service
-.service('getTags', function($state, $http, $q, $ionicPopup, constantService, StorageServiceForToken){
+.service('getTags', function($state, $http, $q, $ionicLoading,$ionicPopup, constantService, StorageServiceForToken){
   this.getAllTags = function(){
+    $ionicLoading.show();
     var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjQ5NzM5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjI3ZjQ3MDVhLWU5NzQtNDJmMi1iY2Q5LTQzZTk5YjA5M2EwZSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.CGrIDlpkbgvNjS4vDjnXfiVXfLd3yA-6OhzQQUojUOg';
     var oauthData = StorageServiceForToken.getAll();
     oauthData =constantService.token;
@@ -171,6 +172,7 @@ angular.module('app.services', ['app-constants'])
           }
           $http(req)
           .then(function(getAllTags) {
+            $ionicLoading.hide();
             console.log(getAllTags);            
             // function to retrive the response
             if (getAllTags.status == 200) {
@@ -187,6 +189,7 @@ angular.module('app.services', ['app-constants'])
 
   //getUserAddedTags
   this.getUserAddedTags = function(){
+    $ionicLoading.show();
     var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NzI5NDg5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6ImEwNmQyYmY3LWNiMDgtNGY2ZS04NjJhLThmZmNlNTVhNWM3MSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.anIkVxZAWXlutyaMo_bL0IAi1jIO-bk2B6hZfe7OPYQ';
     var oauthData = StorageServiceForToken.getAll();
     oauthData =constantService.token;
@@ -208,6 +211,7 @@ angular.module('app.services', ['app-constants'])
           }
           $http(req)
           .then(function(getAllUserAddedTags) {
+            $ionicLoading.hide();
             console.log(getAllUserAddedTags);            
             // function to retrive the response
             if (getAllUserAddedTags.status == 200) {
@@ -226,6 +230,7 @@ angular.module('app.services', ['app-constants'])
 })
 
 .service('tagService', function($http, $q, $ionicLoading,$ionicPopup, constantService, StorageServiceForToken,StorageService){
+    $ionicLoading.show();
     var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjQ5NzM5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjI3ZjQ3MDVhLWU5NzQtNDJmMi1iY2Q5LTQzZTk5YjA5M2EwZSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.CGrIDlpkbgvNjS4vDjnXfiVXfLd3yA-6OhzQQUojUOg';
     var oauthData = StorageServiceForToken.getAll();
     oauthData =constantService.token;
@@ -248,6 +253,7 @@ angular.module('app.services', ['app-constants'])
             console.log('Success', result); 
             
          }, function(err) {
+            $ionicLoading.hide();
             console.error('ERR', err);
             $ionicLoading.hide();
             var alertPopup = $ionicPopup.alert({
@@ -264,6 +270,8 @@ angular.module('app.services', ['app-constants'])
     */
     this.addTags = function(tagValue){
       return $q(function(resolve, reject){
+        $ionicLoading.show();
+
         $http({
           method: 'PATCH',
           url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/iceman@gmail.com/tags',
@@ -273,6 +281,7 @@ angular.module('app.services', ['app-constants'])
           'Authorization': authorizationToken
           }}).then(function(result) {
             console.log('Success', result); 
+            $ionicLoading.hide();
             
          }, function(err) {
             console.error('ERR', err);
@@ -458,7 +467,7 @@ angular.module('app.services', ['app-constants'])
 
 
 //Account and account details Service
-.service('accountTransactionAPI', function($http, $q, constantService, StorageServiceForToken, $ionicLoading){
+.service('accountTransactionAPI', function($http, $q, $ionicLoading,constantService, StorageServiceForToken, $ionicLoading){
   var authorizationToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCIsInByb3ZpZGVyIjoiQmlnT2F1dGgyU2VydmVyIiwidXNlcl9uYW1lIjoiaWNlbWFuQGdtYWlsLmNvbSIsInNjb3BlIjpbInJlYWQiXSwiZXhwIjoxNDc0NjQ5NzM5LCJ1c2VyTmFtZSI6ImljZW1hbkBnbWFpbC5jb20iLCJ1c2VySWQiOiJpY2VtYW5AZ21haWwuY29tIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9VU0VSIl0sImp0aSI6IjI3ZjQ3MDVhLWU5NzQtNDJmMi1iY2Q5LTQzZTk5YjA5M2EwZSIsImNsaWVudF9pZCI6IjRhNGIwMjgxLTQ5YjEtNDUzMy1iM2FjLWVlZTExZjFmNmJkOCJ9.CGrIDlpkbgvNjS4vDjnXfiVXfLd3yA-6OhzQQUojUOg';
     var oauthData = StorageServiceForToken.getAll();
    oauthData =constantService.token;
@@ -474,6 +483,7 @@ angular.module('app.services', ['app-constants'])
   */
   this.accountTransactionDistribution = function(){
     return $q(function(resolve, reject){
+      $ionicLoading.show();  
       var date = new Date();
       var req = {
           url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/iceman@gmail.com/transactions/distribution',
@@ -492,7 +502,8 @@ angular.module('app.services', ['app-constants'])
           }
           $http(req)
           .then(function(accountTransactionDistributionData) {
-            console.log(accountTransactionDistributionData);            
+            console.log(accountTransactionDistributionData);      
+            $ionicLoading.hide();      
             // function to retrive the response
             if (accountTransactionDistributionData.status == 200) {
               resolve(accountTransactionDistributionData.data.response);
@@ -527,6 +538,8 @@ angular.module('app.services', ['app-constants'])
   */
   this.allAccountTransactionDistribution = function(){
     return $q(function(resolve, reject){
+      $ionicLoading.show();
+
       var date = new Date();
       var req = {
           url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/iceman@gmail.com/transactions/distribution',
@@ -543,6 +556,7 @@ angular.module('app.services', ['app-constants'])
           .then(function(allAccountTransactionDistributionData) {
             console.log(allAccountTransactionDistributionData);            
             // function to retrive the response
+            $ionicLoading.hide();
             if (allAccountTransactionDistributionData.status == 200) {
               resolve(allAccountTransactionDistributionData.data.response);
             } else {
@@ -560,6 +574,8 @@ angular.module('app.services', ['app-constants'])
   */
   this.specificBankAccountDetails = function(){
     return $q(function(resolve, reject){
+      $ionicLoading.show();
+
       var req = {
           url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/iceman@gmail.com/IBMGB/7278',
             method:'GET',
@@ -571,7 +587,8 @@ angular.module('app.services', ['app-constants'])
           }
           $http(req)
           .then(function(specificBankAccountDetailsData) {
-            console.log(specificBankAccountDetailsData);            
+            console.log(specificBankAccountDetailsData);  
+            $ionicLoading.hide();          
             // function to retrive the response
             if (specificBankAccountDetailsData.status == 200) {
               resolve(specificBankAccountDetailsData.data.response);
@@ -591,6 +608,8 @@ angular.module('app.services', ['app-constants'])
   */
   this.allBankAccountDetails = function(){
     return $q(function(resolve, reject){
+      $ionicLoading.show();
+
       var req = {
           url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/iceman@gmail.com/accounts',
             method:'GET',
@@ -602,6 +621,7 @@ angular.module('app.services', ['app-constants'])
           }
           $http(req)
           .then(function(allBankAccountDetailsData) {
+            $ionicLoading.hide();
             console.log(allBankAccountDetailsData);            
             // function to retrive the response
             if (allBankAccountDetailsData.status == 200) {
@@ -621,6 +641,8 @@ angular.module('app.services', ['app-constants'])
   */
   this.accountTransactions = function(){
     return $q(function(resolve, reject){
+      $ionicLoading.show();
+
       var req = {
           url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/iceman@gmail.com/transactions',
             method:'GET',
@@ -636,6 +658,7 @@ angular.module('app.services', ['app-constants'])
           }
           $http(req)
           .then(function(accountTransactionsData) {
+            $ionicLoading.hide();
             console.log(accountTransactionsData);            
             // function to retrive the response
             if (accountTransactionsData.status == 200) {
@@ -655,6 +678,8 @@ angular.module('app.services', ['app-constants'])
   */
   this.allAccountTransactions = function(){
     return $q(function(resolve, reject){
+      $ionicLoading.show();
+
       var req = {
           url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/iceman@gmail.com/transactions',
             method:'GET',
@@ -666,6 +691,7 @@ angular.module('app.services', ['app-constants'])
           }
           $http(req)
           .then(function(allAccountTransactionsData) {
+            $ionicLoading.hide();
             console.log(allAccountTransactionsData);            
             // function to retrive the response
             if (allAccountTransactionsData.status == 200) {
@@ -686,6 +712,7 @@ angular.module('app.services', ['app-constants'])
   */
   this.allAccountAverageTransactionExpenses = function(){
     return $q(function(resolve, reject){
+      $ionicLoading.show();
       var date = new Date();
       var req = {
           url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/iceman@gmail.com/transactions/histogram',
@@ -702,6 +729,7 @@ angular.module('app.services', ['app-constants'])
           .then(function(allAccountAverageTransactionExpensesData) {
             console.log(allAccountAverageTransactionExpensesData);            
             // function to retrive the response
+            $ionicLoading.hide();
             if (allAccountAverageTransactionExpensesData.status == 200) {
               resolve(allAccountAverageTransactionExpensesData.data.response);
             } else {
@@ -720,6 +748,7 @@ angular.module('app.services', ['app-constants'])
   */
   this.allAccountAverageTransactionForMonthExprenses = function(){
     return $q(function(resolve, reject){
+      $ionicLoading.show();
       var date = new Date();
       var req = {
           url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/iceman@gmail.com/transactions/histogram',
@@ -734,7 +763,8 @@ angular.module('app.services', ['app-constants'])
           }
           $http(req)
           .then(function(allAccountAverageTransactionExpensesData) {
-            console.log(allAccountAverageTransactionExpensesData);            
+            console.log(allAccountAverageTransactionExpensesData);  
+            $ionicLoading.hide();          
             // function to retrive the response
             if (allAccountAverageTransactionExpensesData.status == 200) {
               resolve(allAccountAverageTransactionExpensesData.data.response);
@@ -754,6 +784,7 @@ angular.module('app.services', ['app-constants'])
   this.specificAccountAverageTransactionExpenses = function(){
     return $q(function(resolve, reject){
       var date = new Date();
+      $ionicLoading.show();
       var req = {
           url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/iceman@gmail.com/transactions/histogram',
             method:'GET',
@@ -771,7 +802,8 @@ angular.module('app.services', ['app-constants'])
           }
           $http(req)
           .then(function(specificAccountAverageTransactionExpensesData) {
-            console.log(specificAccountAverageTransactionExpensesData);            
+            console.log(specificAccountAverageTransactionExpensesData);   
+            $ionicLoading.hide();         
             // function to retrive the response
             if (specificAccountAverageTransactionExpensesData.status == 200) {
               resolve(specificAccountAverageTransactionExpensesData.data.response);
@@ -790,6 +822,8 @@ angular.module('app.services', ['app-constants'])
   */
   this.specificAccountAverageTransactionExpenses = function(){
     return $q(function(resolve, reject){
+      $ionicLoading.show();
+
       var date = new Date();
       var req = {
           url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/iceman@gmail.com/transactions/histogram',
@@ -808,7 +842,8 @@ angular.module('app.services', ['app-constants'])
           }
           $http(req)
           .then(function(specificAccountAverageTransactionExpensesData) {
-            console.log(specificAccountAverageTransactionExpensesData);            
+            console.log(specificAccountAverageTransactionExpensesData);   
+            $ionicLoading.hide();         
             // function to retrive the response
             if (specificAccountAverageTransactionExpensesData.status == 200) {
               resolve(specificAccountAverageTransactionExpensesData.data.response);
@@ -827,6 +862,7 @@ angular.module('app.services', ['app-constants'])
   */
   this.specificAccountAverageTransactionForMonthExprenses = function(){
     return $q(function(resolve, reject){
+      $ionicLoading.show();
       var date = new Date();
       var req = {
           url: 'http://'+constantService.server+':'+constantService.port+constantService.baseURL+'/user/iceman@gmail.com/transactions/histogram',
@@ -845,6 +881,7 @@ angular.module('app.services', ['app-constants'])
           }
           $http(req)
           .then(function(specificAccountAverageMonthTransactionExpensesData) {
+            $ionicLoading.hide();
             console.log(specificAccountAverageMonthTransactionExpensesData);            
             // function to retrive the response
             if (specificAccountAverageMonthTransactionExpensesData.status == 200) {

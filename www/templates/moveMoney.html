@@ -14,9 +14,12 @@
 		</div><!-- /container -->
 		<div id="drop-area" class="drop-area">
 			<div id='container'>
-				<div class="glass drop-area__item" ng-repeat='payee in payeeAccounts' data='{{payee.kind}}'>
+				<!-- <div class="glass drop-area__item" ng-repeat='payee in payeeAccounts' data='{{payee.kind}}'>
 					<label data='{{payee.party.bankId}}' ><b>{{payee.party.bankId}}</b></label>
 					<label data='{{payee.party.accountId}}'><b>{{payee.party.accountId}}</b></label>
+				<div class="water"></div><div class="dummy"></div></div> -->
+				<div class="glass drop-area__item" ng-repeat='payee in payeeAccounts' >
+					<label><b>{{payee.party.bankId}}</b></label>
 				<div class="water"></div><div class="dummy"></div></div>
 		</div>
 		<div class="drop-overlay"></div>

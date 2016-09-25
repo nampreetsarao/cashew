@@ -16,7 +16,7 @@
         <button class="button button-positive  button-block" style="border-radius:10px 10px 10px 10px;" id="account-button9">Assets: {{consildatedAmount}}</button>
         <button class="button button-assertive  button-block" style="border-radius:10px 10px 10px 10px;" id="account-button10">Liability: -1,00,000</button>
         <ion-list show-delete="false" can-swipe="true">
-           <ion-item ng-repeat="i in allAccountTransactionsList">
+           <ion-item collection-repeat="i in allAccountTransactionsList">
                 <button class="button button-energized button-inline card" ng-hide="i.tag == undefined" style="height:10px;border-radius:80px 80px 80px 80px;" id="account-button8">{{i.tag}}</button>
                 <div class="input-label card" style="color: black; font-weight: 600; width:100%;">
                     Description: {{i.detailsDescription}}<br>Amount : {{i.detailsValue}}<br>Date: {{i.postedDate | date : "dd/MM/y"}}                    

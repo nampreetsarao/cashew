@@ -786,7 +786,7 @@
                 API : Add Tags
                 Service : 
               */
-              var tagVal = $scope.data.tagName;
+              var tagVal = document.getElementById("tagName").value;//$scope.data.tagName;
               var tagStruct = [{
                 name: tagVal,
                 spendLimit: "0"
@@ -796,7 +796,7 @@
 
                 /*var newButton = document.createElement('button');
                 document.getElementById('addTagButton').appendChild(newButton);*/
-                var a = $scope.data.tagName;
+                var a = tagVal;
                 var idLimit = "10";
                 var b = idLimit-1;
                 $("<button id='dyna'+b class='button button-energized button-small button-inline' style='border: 0.5px solid;height: 100px; width:100px;border-radius:150px 150px 150px 150px;margin:2px 2px 2px 2px;'></button>").insertBefore("#vADD-button100");
@@ -820,6 +820,7 @@
       }];*/
 
       $scope.addTag = tagService.tagTransactionToApi($scope.tagAccountId, $scope.tagBankId, $scope.tagTransactionId, tagVal);
+      $scope.myPopup.close();
       //myPopup.close();
     }
 
@@ -1007,7 +1008,7 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
     var droppableArr = [];
     var dropAreaTimeout;
 
-    classie.add( dropArea, 'show' );
+    //classie.add( dropArea, 'show' );
       //** Drag-n-Drop functionality **//
     // initialize droppables
         [].slice.call( document.querySelectorAll( '#drop-area .drop-area__item' )).forEach( function( el ) {
