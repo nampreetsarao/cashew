@@ -174,7 +174,7 @@
                 // StorageServiceForToken.add("add more") ; 
                  //localStorage.setItem("access_token",$scope.oauthData.access_token);
                  ref.close();
-                 alert("Token received:"+ message.access_token);
+                 //alert("Token received:"+ message.access_token);
 
                  //Persisting the token data in local storage
                  //StorageServiceForToken.remove($scope.oauthData);
@@ -1281,6 +1281,19 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
                 desc: insight.description,
                 image: pics[Math.floor(Math.random()*pics.length)]
             };
+             if(insight.description.indexOf("salary") != -1){
+              $("#insightsTitle").html("");
+              $("#insightsTitle").html("Looking for a better paying job? <img id='linkedinID' src='img/linkedin.png'>");
+              card.title = "Looking for a better paying job?";
+              //$("#linkedinID").removeClass("linked");
+              //$("#linkedinID").css('display','block');
+            }
+            else{
+              $("#insightsTitle").html("");
+              $("#insightsTitle").html("Looking for a better paying job?");
+              //$("#linkedinID").addClass("linked"); 
+              //$("#linkedinID").css('display','none');
+            }
             $scope.cardTypes.push(card);
           }
       });
@@ -1358,8 +1371,8 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
               for(var i=0;i<r.length;i++){
                   $scope.totalBalance = $scope.totalBalance + parseInt(r[i].balance.amount);
               }
-          });
-          var remainingBal = parseInt($scope.totalBalance) - parseInt(newSpent);
+
+               var remainingBal = parseInt($scope.totalBalance) - parseInt(newSpent);
           
 
           var gpromise = goalsService.getAllGoals();
@@ -1367,13 +1380,19 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
               var threshold = data.data.response[0].threshold;
               $scope.goalTarget = parseInt(threshold);
               $scope.goalTitle = data.data.response[0].description;
-              //$scope.percentage = ((parseInt(remainingBal)*100)/parseInt($scope.goalTarget));
+              $scope.leftWithMoney = ((parseInt(remainingBal)*100)/parseInt($scope.goalTarget));
+
+              
               $scope.percentage = 100 - ((5*100)/25);
 
               if(remainingBal - $scope.goalTarget){
                 //good
                   $("#progressbar").css("border-top",'3px solid green');
                   $("#goalStatus").html("Bingo..!");
+                  
+                  $("#leftWithMoney").html("Even after saving you are left with:" +$scope.leftWithMoney);  
+                  $("#suggestion").html("Would you like to invest the amount exceeding your goal somewhere?");
+                  $("#suggestions").html("Here are our few suggestions: Black Rock Mutual Fund");
               }
               else{
                 //bad
@@ -1381,6 +1400,9 @@ function ($scope, $stateParams,  $ionicModal, getAllAccountsDetailsService, acco
                   $("#goalStatus").html("Trouble..!");
               }
           });
+
+          });
+          
       });
 
       $scope.progressval = 0;

@@ -10,9 +10,9 @@
 		      </swipe-card>
 		      <swipe-card class='effect1' ng-repeat="card in cards" on-destroy="cardDestroyed($index)" on-card-swipe="cardSwiped($index)">
 		        <div>
-		          <!-- <div class="title">
+		          <div class="title" id='insightsTitle'>
 		            {{card.title}}
-		          </div> -->
+		          </div>
 		          <div class="image">
 		            <img ng-src="{{card.image}}">
 		          </div>

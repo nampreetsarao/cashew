@@ -88,10 +88,23 @@
        -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
             box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
 }
+.linked{
+
+}
+#linkedinID{
+      width: 26%;
+    float: right;
+}
+#insightsTitle{
+  font-weight: bold;
+   font-family: Amarante;
+   color: red;
+}
 .insightDesc{
       font-family: Amarante;
     font-weight: bold;
     padding: 6%;
+    padding-top: 0;
 }
 .insightImg{
   background-size: 110% 110%;
@@ -135,6 +148,7 @@
 
 .transCard, .transItem {
   background-color: #1f1f1f;
+  border:0px !important;
 }
 
 .transTag{
